@@ -12,8 +12,8 @@ const int ColourPin2 = 0;
 const int ColourPin3 = 0;
 const int ShootBallPin = 19;
 const int PrepareBallPin = 20;
-const int FrontSenzorPin = 46;
-const int BackSenzorPin = 45;
+const int FrontSenzorPin = 18;
+const int BackSenzorPin = 17;
 const int LeftSenzorPin = 43;
 const int RightSenzorPin = 42;
  
@@ -76,9 +76,19 @@ void sensors_and_devices::SenzorFront()
   frontDetected = !frontDetected;
 }
 
+boolean sensors_and_devices::detectFront()
+{
+  return frontDetected;
+}
+
 void sensors_and_devices::SenzorBack()
 {
   backDetected = !backDetected;
+}
+
+boolean sensors_and_devices::detectBack()
+{
+  return backDetected;
 }
 
 void sensors_and_devices::SenzorLeft()

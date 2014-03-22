@@ -61,14 +61,14 @@ void loop()
       state++;
       break;
    case 1:                    //wait to complete and rotate left
-      if (motorLeft.isOff() && motorRight.isOff())
+      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
       {        
         TurnLeft(103,103);
         state++;
       }
       break;
     case 2:                    //wait to complete and move forward
-      if (motorLeft.isOff() && motorRight.isOff())
+      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
       {        
         MoveForward(300,1500);
         if (v1)
@@ -78,7 +78,7 @@ void loop()
       }
       break;
     case 3:                    //shoot balls 
-      if (motorLeft.isOff() && motorRight.isOff())
+      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
       {             
         if(shootedBalls < 6)
         {
@@ -97,21 +97,21 @@ void loop()
       }  
       break;
     case 4:        //wait to complete and rotate left
-      if (motorLeft.isOff() && motorRight.isOff())
+      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
       {             
         TurnLeft(103,103);
         state++;
       }
       break;
     case 5:             //wait to complete and move forward
-      if (motorLeft.isOff() && motorRight.isOff())
+      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
       {  
         MoveForward(200, 1500);
         state++;
       }
       break;
     case 6:        //wait to complete and move backward
-      if (motorLeft.isOff() && motorRight.isOff())
+      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
       {        
         MoveBackward(300, 1500);
         state++;
@@ -121,7 +121,7 @@ void loop()
       //stop
       break;
     case 15:
-      if (motorLeft.isOff() && motorRight.isOff())
+      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
       {             
         SnD.startShooting();   
         MoveForward(240,4000);
@@ -129,7 +129,7 @@ void loop()
       }
       break;
     case 16:
-      if (motorLeft.isOff() && motorRight.isOff())
+      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
       {
         SnD.stopShooting();
         MoveForward(200,1500);
