@@ -1,571 +1,184 @@
+#include <elapsedMillis.h>
+
+#include <Servo.h>
 #include <Stepper.h>
+#include <LiquidCrystal.h>
 #include <TimerThree.h>
-
 #include "motors.h"
-/*
-  1.8 degrees / step
-  200 steps -> 360 degrees
-  Encoders + Senzors - 2, 3, 21, 20, 19, 18 
-  colours : 1-red, 2-blue, 3-green
-*/
-boolean FirstBallFlag = true;
+#include "sensors_and_devices.h"
 
-const int ThrowNetPin = 7;
-const int ShootBallPin = 9;
-const int BallHolderPin = 33;
-const int PrepareBallPin = 32;
+#define DELAY_BETWEEN_TOGGLE 500
+#define STATE_STOP 8
+#define STATE_WAIT 9
 
-const int ColourPin = 8; // 0 - left/red , 1 - right/yellow
-const int StrategyPin = 49; // in case of more strategies
+int enablePin = 7;
+int stepPin = 6;
+int directionPin = 5;
 
-const int FrontSenzorPin = 46;
-const int BackSenzorPin = 45;
-const int LeftSenzorPin = 43;
-const int RightSenzorPin = 42;
+int buttonTestPin = 40;
 
-const int StopLedsPin = 14; // maybe not
-const int LeftSignalingLedsPin = 16; // maybe not
-const int RightSignalingLedsPin = 17; // maybe not
+int enablePin2 = 4;
+int stepPin2 = 3;
+int directionPin2 = 2;
 
-int selectedSide = 0;
-int selectedStrategy = 0; // in case of more strategies
-// int teamColour = 2;
-int strategyStep = 0;
+int led = 13;
 
-const float fastSpeedDelay = 3;
-const float slowSpeedDelay = 5;
-const float accelerationSteps = 80;
-const float delayRate = 0.025;
+elapsedMillis wait_time;
+int time_to_wait, state_to_set_after_wait;
+motors motorLeft;
+motors motorRight;
+sensors_and_devices SnD;
 
-// 0 - left , 1 - right
-int motorEnablePins[] = {51,52};
+int state;
+int shootedBalls = 0;
+void wait(int time_in_ms, int state);
+void MoveForward(int, int);
+void MoveBackward(int, int);
+void TurnLeft(int, int);
+void TurnRight(int, int);
 
-byte motorSteps[4][4] = {
-                          {B10101010, B10100110, B10100101, B10101001},
-                          {B01101010, B01100110, B01100101, B01101001},
-                          {B01011010, B01010110, B01010101, B01011001},
-                          {B10011010, B10010110, B10010101, B10011001}
-                          };
-
-int motorCounters[2] = {0,0}; //  index: 0 - left, 1 - right
-const int wheelDiameter = 10.3; // cm   
-const int wheelRevolutionSteps = 200;
-const float stepCmRatio = (float)wheelRevolutionSteps/wheelDiameter; // steps for a cm
-const float degreeStepRatio = 5.8; // steps for a degree
-String direction = "";
-volatile boolean frontDetected = false;
-volatile boolean leftDetected = false;
-volatile boolean rightDetected = false;
-volatile boolean backDetected = false;
-volatile int stepsLeft = 0;
-volatile int stepsRight = 0;
-boolean completeSteps = false;
-const int delayActions = 1500;
-      
-void MotionMotors();
-void MoveForward(float);
-void MoveBackwards(float);
-void TurnLeft(int);
-void TurnRight(int);
-void EncoderLeft();
-void EncoderRight();
-void SenzorFront();
-void SenzorLeft();
-void SenzorRight();
-void SenzorBack();
-void ThrowNet();
-void ShootBall();
-void StopMotors();
-void StartMotors();
-void StopEverything();
-        
 void setup()
 {
-  Timer3.initialize();
-  Timer3.attachInterrupt(StopEverything,1000000);
-  pinMode(47, OUTPUT);
-  pinMode(47, HIGH);
-  pinMode(StopLedsPin, OUTPUT);
-  pinMode(LeftSignalingLedsPin, OUTPUT);
-  pinMode(RightSignalingLedsPin, OUTPUT);
-  pinMode(ShootBallPin, OUTPUT);
-//  TCS3200setup();
   
-//  attachInterrupt(0, EncoderLeft, FALLING);
-//  attachInterrupt(1, EncoderRight, FALLING);
-  attachInterrupt(1, SenzorBack, CHANGE);
-  attachInterrupt(0, SenzorFront, CHANGE);
-  attachInterrupt(4, SenzorLeft, CHANGE);
-  attachInterrupt(5, SenzorRight, CHANGE);
-  
-  StartMotors();
-    
-  DDRA = B11111111; // set PORTA pins to output -> 22-29
-  if(analogRead(ColourPin)<=800)
-  {
-    teamColour = 2;
-    selectedSide = 0;
-  }else
-  {
-    teamColour = 1;
-    selectedSide = 1;
-  }
-  if(digitalRead(StrategyPin) == LOW)
-  {
-    selectedStrategy = 0;
-  }else
-  {
-    selectedStrategy = 1;
-  }
-  strategyStep = 0;
+  motorLeft.init(enablePin, directionPin, stepPin);
+  motorRight.init(enablePin2, directionPin2, stepPin2);
+  pinMode(led, OUTPUT);
+  pinMode(buttonTestPin, INPUT_PULLUP);
+  digitalWrite(led, LOW);
+  delay(1000);
+  state = 0;
 }
 
 void loop()
 {
-
-switch(selectedSide)
-{
-  case 0: //left/red
-        {
-          switch(selectedStrategy)
-          {
-            case 0:
-                  {
-                    switch(strategyStep)
-                    {
-                       case 0:
-                            {
-                              delay(10000);
-                              MoveForward(0);
-                              TurnRight();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();                             
-                              
-                              strategyStep++;
-                              break;
-                            }
-                       case 1:
-                            {
-                              ThrowNet();  
-                              strategyStep++;
-                              break;
-                            }     
-                       case 2:
-                            {                            
-                              MoveForward(0);
-                              TurnRight();
-                              MoveForward(0);
-                              MoveBackward(0);
-                              strategyStep++;
-                              break;
-                            }
-                       case 3:
-                            {
-                              StopMotors();
-                              strategyStep++;
-                              break;
-                            }     
-                    }
-                    break;
-                  }
-            case 1: 
-                  {
-                    switch(strategyStep)
-                    {
-                      case 0:
-                            {
-                            StopMotors();
-                            strategyStep++;
-                            break;
-                            }
-                    }
-                    break;
-                  }
-          }
-        break;  
-        }
-  case 1: //right/yellow
-        {
-           switch(selectedStrategy)
-          {
-            case 0:
-                  {
-                    switch(strategyStep)
-                    {
-                       case 0:
-                            {
-                              delay(10000);
-                              MoveForward(0);
-                              TurnLeft();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();
-                              MoveForward(0);
-                              ShootBall();                             
-                              
-                              strategyStep++;
-                              break;
-                            }
-                       case 1:
-                            {
-                              ThrowNet();  
-                              strategyStep++;
-                              break;
-                            }     
-                       case 2:
-                            {                            
-                              MoveForward(0);
-                              TurnLeft();
-                              MoveForward(0);
-                              MoveBackward(0);
-                              strategyStep++;
-                              break;
-                            }
-                       case 3:
-                            {
-                              StopMotors();
-                              strategyStep++;
-                              break;
-                            }     
-                    }
-                    break;
-                  }
-            case 1:
-                  {
-                    switch(strategyStep)
-                    {
-                      case 0:
-                            {
-                            StopMotors();
-                            strategyStep++;
-                            break;
-                            }
-                    }
-                    break;
-                  }
-          } 
-          break;
-        } 
-}
-
-}
-
-void StartMotors()
-{
-  for(int counter = 0;counter<3;counter++)
-  {
-    pinMode(motorEnablePins[counter], OUTPUT);
-    digitalWrite(motorEnablePins[counter], HIGH);
-  }
-}
-
-void StopMotors()
-{
-  for(int counter = 0;counter<3;counter++)
-  {
-    digitalWrite(motorEnablePins[counter], LOW);
-  }
-}
-
-void StopEverything()
-{
-    StopMotors();
-}
-
-void ThrowNet()
-{
-  digitalWrite(ThrowNetPin, HIGH);
-  delay(delayActions);
-  digitalWrite(ThrowNetPin, LOW);
-}
-
-void ShootBall()
-{
-  if(FirstBallFlag == true)
-  {
-    digitalWrite(ShootBallPin, HIGH);
-    FirstBallFlag = false;
-    digitalWrite(BallHolderPin, HIGH);
-    delay(500); 
-    digitalWrite(BallHolderPin, LOW);
-  }
-  else
-  {
-    digitalWrite(PrepareBallPin, HIGH);
-    delay(1500);
-    digitalWrite(PrepareBallPin, LOW);
-  }
-}
-
-void SenzorFront()
-{
-  frontDetected = !frontDetected;
-}
-
-void SenzorBack()
-{
-  backDetected = !backDetected;
-}
-
-void SenzorLeft()
-{
-  leftDetected = !leftDetected;
-}
-
-void SenzorRight()
-{
-  rightDetected = !rightDetected;
-}
-
-void EncoderLeft()
-{
-  stepsLeft++;
-}
-
-void EncoderRight()
-{
-  stepsRight++;
-}
-
-void MotionMotors()
-{
-  PORTA = motorSteps[motorCounters[0]][motorCounters[1]];
-}
-
-void MoveForward(float distance)
-{
-  int steps = distance * stepCmRatio;
-  stepsLeft = 0;
-  stepsRight = 0;
-  float stepDelay = slowSpeedDelay;
-  int deccelerationSteps = steps - accelerationSteps;
-  for(int stepCounter = 1;stepCounter<=steps;stepCounter++)
-  {
-  while(digitalRead(FrontSenzorPin) == HIGH){
-    digitalWrite(RightSignalingLedsPin, HIGH);
-    digitalWrite(LeftSignalingLedsPin, HIGH);
-    digitalWrite(StopLedsPin, HIGH);
-    delay(250);
-    digitalWrite(RightSignalingLedsPin, LOW);
-    digitalWrite(LeftSignalingLedsPin, LOW);
-    digitalWrite(StopLedsPin, LOW);
-    delay(250);
-  }
-    MotionMotors();
-    
-    motorCounters[0]++;
-    if(motorCounters[0] == 4){
-      motorCounters[0] = 0;
-    }
-    
-    motorCounters[1]++;
-    if(motorCounters[1] == 4){
-      motorCounters[1] = 0;
-    }
-    
-    if(stepCounter<accelerationSteps)
-    {
-      stepDelay -= delayRate;
-    }
-    if(stepCounter>deccelerationSteps)
-    {
-      stepDelay += delayRate;
-      digitalWrite(StopLedsPin,HIGH);
-    }
-    delay(stepDelay);
-  }
-  digitalWrite(StopLedsPin,LOW);
-//  while(stepsLeft!=steps)
-//  {
-//    MotionMotors();
-//    motorCounters[0]++;
-//    if(motorCounters[0] == 4){
-//      motorCounters[0] = 0;
-//    }
-//    delay(slowSpeedDelay);
-//  }
-//  while(stepsRight!=steps)
-//  {
-//    MotionMotors();
-//    motorCounters[1]++;
-//    if(motorCounters[1] == 4){
-//      motorCounters[1] = 0;
-//    }
-//    delay(slowSpeedDelay);
-//  }
-}
-
-void MoveBackwards(float distance)
-{
-  int steps = distance * stepCmRatio;
-  stepsLeft = 0;
-  stepsRight = 0;
-  float stepDelay = slowSpeedDelay;
-  int deccelerationSteps = steps - accelerationSteps;
   
-  for(int stepCounter = 1;stepCounter<=steps;stepCounter++)
+  switch (state)
   {
-    while(digitalRead(BackSenzorPin) == HIGH)
-    {
-      digitalWrite(RightSignalingLedsPin, HIGH);
-      digitalWrite(LeftSignalingLedsPin, HIGH);
-      digitalWrite(StopLedsPin, HIGH);
-      delay(250);
-      digitalWrite(RightSignalingLedsPin, LOW);
-      digitalWrite(LeftSignalingLedsPin, LOW);
-      digitalWrite(StopLedsPin, LOW);
-      delay(250);
-    }
-    MotionMotors();
-    
-    motorCounters[0]--;
-    if(motorCounters[0] == -1)
-    {
-      motorCounters[0] = 3;
-    }
-    
-    motorCounters[1]--;
-    if(motorCounters[1] == -1)
-    {
-      motorCounters[1] = 3;
-    }
-    if(stepCounter<accelerationSteps)
-    {
-      stepDelay -= delayRate;
-    }
-    if(stepCounter>deccelerationSteps)
-    {
-      stepDelay += delayRate;
-      digitalWrite(StopLedsPin,HIGH);
-    }
-    delay(stepDelay);
+    case 0:     //move forward
+      
+      MoveForward(300,1500);
+      state++;
+      break;
+   case 1:                    //wait to complete and rotate left
+      if (motorLeft.isOff() && motorRight.isOff())
+      {        
+        TurnLeft(103,103);
+        state++;
+      }
+      break;
+    case 2:                    //wait to complete and move forward
+      if (motorLeft.isOff() && motorRight.isOff())
+      {        
+        MoveForward(300,1500);
+        state++;
+      }
+      break;
+    case 3:                    //shoot balls 
+      if (motorLeft.isOff() && motorRight.isOff())
+      {             
+        if(shootedBalls < 6)
+        {
+          if(shootedBalls == 0)
+            SnD.startShooting();   
+          MoveForward(40,10000);
+          shootedBalls++;
+          wait(2000, state);
+        }
+        else
+        {     
+          SnD.stopShooting();                    
+          motorLeft.setMaxSpeed();        
+          motorRight.setMaxSpeed();
+          MoveForward(200,1500);
+          state++;
+        }
+      }  
+      break;
+    case 4:        //wait to complete and rotate left
+      if (motorLeft.isOff() && motorRight.isOff())
+      {             
+        TurnLeft(103,103);
+        state++;
+      }
+      break;
+    case 5:             //wait to complete and move forward
+      if (motorLeft.isOff() && motorRight.isOff())
+      {  
+        MoveForward(200, 1500);
+        state++;
+      }
+      break;
+    case 6:        //wait to complete and move backward
+      if (motorLeft.isOff() && motorRight.isOff())
+      {        
+        MoveBackward(300, 1500);
+        state++;
+      }
+      break;
+    case 7:
+      //stop
+      break;
+    case STATE_STOP:   //stop and throw net
+      //SnD.ThrowNet();
+      //stop
+      break;
+    case STATE_WAIT:
+      if (wait_time > time_to_wait)
+      {
+        state = state_to_set_after_wait;
+      }
+      break;
   }
-  digitalWrite(StopLedsPin,LOW);
-//  while(stepsLeft!=steps)
-//  {
-//    MotionMotors();
-//    motorCounters[0]--;
-//    if(motorCounters[0] == -1)
-//    {
-//      motorCounters[0] = 3;
-//    }
-//  }
-//  while(stepsRight!=steps)
-//  {
-//    MotionMotors();
-//    motorCounters[1]--;
-//    if(motorCounters[1] == -1)
-//    {
-//      motorCounters[1] = 3;
-//    }
-//  }
+  motorLeft.doLoop();
+  motorRight.doLoop();
+
 }
 
-void TurnLeft(int degreeCount)
+void wait(int time_in_ms, int state_after)
 {
-  int steps = degreeCount * degreeStepRatio;
-  float stepDelay = slowSpeedDelay;
-    int deccelerationSteps = steps - accelerationSteps;
-    digitalWrite(LeftSignalingLedsPin, HIGH);
-  for(int stepCounter = 1;stepCounter<=steps;stepCounter++)
-  {
-    while(digitalRead(LeftSenzorPin) == HIGH)
-    {
-      digitalWrite(RightSignalingLedsPin, HIGH);
-      digitalWrite(LeftSignalingLedsPin, HIGH);
-      digitalWrite(StopLedsPin, HIGH);
-      delay(250);
-      digitalWrite(RightSignalingLedsPin, LOW);
-      digitalWrite(LeftSignalingLedsPin, LOW);
-      digitalWrite(StopLedsPin, LOW);
-      delay(250);
-    }
-    MotionMotors();
-    
-    motorCounters[0]--;
-    if(motorCounters[0] == -1)
-    {
-      motorCounters[0] = 3;
-    }
-    motorCounters[1]++;
-    if(motorCounters[1] == 4){
-      motorCounters[1] = 0;
-    }
-    if(stepCounter<accelerationSteps)
-    {
-      stepDelay -= delayRate;
-    }
-    if(stepCounter>deccelerationSteps)
-    {
-      stepDelay += delayRate;
-      digitalWrite(StopLedsPin,HIGH);
-    }
-    delay(stepDelay);
-  }
-  digitalWrite(LeftSignalingLedsPin, LOW);
-  digitalWrite(StopLedsPin,LOW);
+  state = STATE_WAIT;
+  wait_time = 0;
+  time_to_wait = time_in_ms;
+  state_to_set_after_wait = state_after;
 }
 
-void TurnRight(int degreeCount)
+void MoveForward(int distance, int step_delay)
+{       
+  motorLeft.setTargetDelay(step_delay);         
+  motorRight.setTargetDelay(step_delay);
+  motorLeft.setDirectionForward();
+  motorRight.setDirectionForward();
+  motorRight.toggleDirection();     
+  motorLeft.doSteps(distance);
+  motorRight.doSteps(distance);
+}
+
+void MoveBackward(int distance, int step_delay)
+{       
+  motorLeft.setTargetDelay(step_delay);         
+  motorRight.setTargetDelay(step_delay);
+  motorLeft.setDirectionForward();
+  motorRight.setDirectionForward();
+  motorLeft.toggleDirection();     
+  motorLeft.doSteps(distance);
+  motorRight.doSteps(distance);
+}
+
+void TurnLeft(int leftMotor, int rightMotor)
 {
-  int steps = degreeCount * degreeStepRatio;
-  float stepDelay = slowSpeedDelay;
-    int deccelerationSteps = steps - accelerationSteps;
-    digitalWrite(RightSignalingLedsPin, HIGH);
-    
-  for(int stepCounter = 1;stepCounter<=steps;stepCounter++)
-  {
-    while(digitalRead(RightSenzorPin) == HIGH)
-    {
-      digitalWrite(RightSignalingLedsPin, HIGH);
-      digitalWrite(LeftSignalingLedsPin, HIGH);
-      digitalWrite(StopLedsPin, HIGH);
-      delay(250);
-      digitalWrite(RightSignalingLedsPin, LOW);
-      digitalWrite(LeftSignalingLedsPin, LOW);
-      digitalWrite(StopLedsPin, LOW);
-      delay(250);
-    }
-    MotionMotors();
-    
-    motorCounters[0]++;
-    if(motorCounters[0] == 4){
-      motorCounters[0] = 0;
-    }
-    motorCounters[1]--;
-    if(motorCounters[1] == -1)
-    {
-      motorCounters[1] = 3;
-    }
-    if(stepCounter<accelerationSteps)
-    {
-      stepDelay -= delayRate;
-    }
-    if(stepCounter>deccelerationSteps)
-    {
-      stepDelay += delayRate;
-      digitalWrite(StopLedsPin,HIGH);
-    }
-    delay(stepDelay);
-  }
-  digitalWrite(StopLedsPin,LOW);
-  digitalWrite(RightSignalingLedsPin, LOW);
+  motorLeft.setDirectionForward();
+  motorRight.setDirectionForward();
+  motorRight.toggleDirection();
+  motorLeft.toggleDirection();        
+  motorLeft.doSteps(leftMotor);
+  motorRight.doSteps(rightMotor);
 }
 
+
+void TurnRight(int leftMotor, int rightMotor)
+{  
+  motorLeft.setDirectionForward();
+  motorRight.setDirectionForward();
+  motorLeft.doSteps(leftMotor);
+  motorRight.doSteps(rightMotor);
+}
