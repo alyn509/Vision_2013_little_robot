@@ -8,8 +8,8 @@
 #include "sensors_and_devices.h"
 
 #define DELAY_BETWEEN_TOGGLE 500
-#define STATE_STOP 8
-#define STATE_WAIT 9
+#define STATE_STOP -1
+#define STATE_WAIT -2
 
 int enablePin = 7;
 int stepPin = 6;
@@ -31,6 +31,7 @@ sensors_and_devices SnD;
 
 int state;
 int shootedBalls = 0;
+boolean v1;
 void wait(int time_in_ms, int state);
 void MoveForward(int, int);
 void MoveBackward(int, int);
@@ -39,7 +40,7 @@ void TurnRight(int, int);
 
 void setup()
 {
-  
+  SnD.init();
   motorLeft.init(enablePin, directionPin, stepPin);
   motorRight.init(enablePin2, directionPin2, stepPin2);
   pinMode(led, OUTPUT);
@@ -47,6 +48,7 @@ void setup()
   digitalWrite(led, LOW);
   delay(1000);
   state = 0;
+  v1 = true;
 }
 
 void loop()
@@ -55,7 +57,6 @@ void loop()
   switch (state)
   {
     case 0:     //move forward
-      
       MoveForward(300,1500);
       state++;
       break;
@@ -70,7 +71,10 @@ void loop()
       if (motorLeft.isOff() && motorRight.isOff())
       {        
         MoveForward(300,1500);
-        state++;
+        if (v1)
+          state++;
+        else
+          state = 15;
       }
       break;
     case 3:                    //shoot balls 
@@ -80,15 +84,13 @@ void loop()
         {
           if(shootedBalls == 0)
             SnD.startShooting();   
-          MoveForward(40,10000);
+          MoveForward(40,4000);
           shootedBalls++;
           wait(2000, state);
         }
         else
         {     
-          SnD.stopShooting();                    
-          motorLeft.setMaxSpeed();        
-          motorRight.setMaxSpeed();
+          SnD.stopShooting();
           MoveForward(200,1500);
           state++;
         }
@@ -117,6 +119,52 @@ void loop()
       break;
     case 7:
       //stop
+      break;
+    case 15:
+      if (motorLeft.isOff() && motorRight.isOff())
+      {             
+        SnD.startShooting();   
+        MoveForward(240,4000);
+        state++;
+      }
+      break;
+    case 16:
+      if (motorLeft.isOff() && motorRight.isOff())
+      {
+        SnD.stopShooting();
+        MoveForward(200,1500);
+        state = 4;
+      }
+      break;
+    case 100:
+      motorLeft.setTargetDelay(300);
+      motorRight.setTargetDelay(300);
+      motorLeft.setDirectionForward();
+      motorRight.setDirectionForward();
+      motorRight.toggleDirection();     
+      motorLeft.doDistanceInCm(10.3);
+      motorRight.doDistanceInCm(10.3);
+      state = STATE_STOP;
+      break;
+    case 101:
+      motorLeft.setTargetDelay(300);
+      motorRight.setTargetDelay(300);
+      motorLeft.setDirectionForward();
+      motorRight.setDirectionForward();
+      motorRight.toggleDirection();     
+      motorLeft.doDistanceInCm(5);
+      motorRight.doDistanceInCm(5);
+      state = STATE_STOP;
+      break;
+    case 102:
+      motorLeft.setTargetDelay(300);
+      motorRight.setTargetDelay(300);
+      motorLeft.setDirectionForward();
+      motorRight.setDirectionForward();
+      motorRight.toggleDirection();     
+      motorLeft.doDistanceInCm(20);
+      motorRight.doDistanceInCm(20);
+      state = STATE_STOP;
       break;
     case STATE_STOP:   //stop and throw net
       //SnD.ThrowNet();
