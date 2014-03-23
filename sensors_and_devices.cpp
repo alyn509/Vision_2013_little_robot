@@ -12,8 +12,8 @@ const int ColourPin2 = 0;
 const int ColourPin3 = 0;
 const int ShootBallPin = 19;
 const int PrepareBallPin = 20;
-const int FrontSenzorPin = 18;
-const int BackSenzorPin = 17;
+const int FrontSenzorPin = 17;
+const int BackSenzorPin = 18;
 const int LeftSenzorPin = 43;
 const int RightSenzorPin = 42;
  
@@ -34,7 +34,7 @@ void sensors_and_devices::init()
   attachInterrupt(1, ColourSensor, CHANGE);
   
   pinMode(0, INPUT);
-  attachInterrupt(0, SenzorFront, CHANGE);
+  attachInterrupt(FrontSenzorPin, SenzorFront, CHANGE);
   
   pinMode(4, INPUT);
   attachInterrupt(4, SenzorLeft, CHANGE);
@@ -78,7 +78,7 @@ void sensors_and_devices::SenzorFront()
 
 boolean sensors_and_devices::detectFront()
 {
-  return frontDetected;
+  return digitalRead(FrontSenzorPin);
 }
 
 void sensors_and_devices::SenzorBack()
@@ -88,7 +88,7 @@ void sensors_and_devices::SenzorBack()
 
 boolean sensors_and_devices::detectBack()
 {
-  return backDetected;
+  return digitalRead(BackSenzorPin);
 }
 
 void sensors_and_devices::SenzorLeft()
@@ -103,6 +103,6 @@ void sensors_and_devices::SenzorRight()
 
 void sensors_and_devices::ColourSensor()
 {  
-  attachInterrupt(1, SenzorBack, CHANGE);
+  attachInterrupt(BackSenzorPin, SenzorBack, CHANGE);
   blackLineDetected = !blackLineDetected;
 }

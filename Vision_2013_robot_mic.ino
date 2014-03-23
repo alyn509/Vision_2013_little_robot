@@ -47,8 +47,9 @@ void setup()
   pinMode(buttonTestPin, INPUT_PULLUP);
   digitalWrite(led, LOW);
   delay(1000);
-  state = 0;
+  state = 100;
   v1 = true;
+  //Serial.begin(9600);
 }
 
 void loop()
@@ -63,12 +64,12 @@ void loop()
    case 1:                    //wait to complete and rotate left
       if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
       {        
-        TurnLeft(103,103);
-        state++;
+        TurnLeft(400,400);
+        //state++;
       }
       break;
     case 2:                    //wait to complete and move forward
-      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
+      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {        
         MoveForward(300,1500);
         if (v1)
@@ -78,7 +79,7 @@ void loop()
       }
       break;
     case 3:                    //shoot balls 
-      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
+      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {             
         if(shootedBalls < 6)
         {
@@ -97,21 +98,21 @@ void loop()
       }  
       break;
     case 4:        //wait to complete and rotate left
-      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
+      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {             
         TurnLeft(103,103);
         state++;
       }
       break;
     case 5:             //wait to complete and move forward
-      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
+      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {  
         MoveForward(200, 1500);
         state++;
       }
       break;
     case 6:        //wait to complete and move backward
-      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
+      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {        
         MoveBackward(300, 1500);
         state++;
@@ -121,7 +122,7 @@ void loop()
       //stop
       break;
     case 15:
-      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
+      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {             
         SnD.startShooting();   
         MoveForward(240,4000);
@@ -129,7 +130,7 @@ void loop()
       }
       break;
     case 16:
-      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
+      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {
         SnD.stopShooting();
         MoveForward(200,1500);
@@ -137,8 +138,8 @@ void loop()
       }
       break;
     case 100:
-      motorLeft.setTargetDelay(300);
-      motorRight.setTargetDelay(300);
+      motorLeft.setTargetDelay(1500);
+      motorRight.setTargetDelay(1500);
       motorLeft.setDirectionForward();
       motorRight.setDirectionForward();
       motorRight.toggleDirection();     
@@ -166,6 +167,28 @@ void loop()
       motorRight.doDistanceInCm(20);
       state = STATE_STOP;
       break;
+    case 200:
+      Serial.print(SnD.detectFront());
+      Serial.print(" ");
+      Serial.println(SnD.detectBack());
+      break;
+    case 300:
+      MoveForward(30000, 200);
+      state = 301;
+      break;
+    case 301:
+      if (motorLeft.isOff() && motorRight.isOff())
+        state = STATE_STOP;
+      if (SnD.detectFront() || SnD.detectBack())
+      {
+        motorLeft.pause();
+        motorRight.pause();
+      }
+      else
+      {
+        motorLeft.unpause();
+        motorRight.unpause();
+      }
     case STATE_STOP:   //stop and throw net
       //SnD.ThrowNet();
       //stop
@@ -214,6 +237,8 @@ void MoveBackward(int distance, int step_delay)
 
 void TurnLeft(int leftMotor, int rightMotor)
 {
+  motorLeft.setTargetDelay(100);         
+  motorRight.setTargetDelay(100);
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
   motorRight.toggleDirection();
