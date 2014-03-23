@@ -35,8 +35,8 @@ class motors {
     
     float wheelDiameter;
     float wheelRevolutionSteps;
+    float wheelCircumference;
     float stepCmRatio; // steps for a cm
-    float degreeStepRatio;
 };
 
 #endif
