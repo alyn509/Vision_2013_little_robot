@@ -13,10 +13,10 @@ void motors::init(int enablePin, int directionPin, int stepPin)
   this->directionPin = directionPin;
   this->stepPin = stepPin;
   
-  wheelDiameter = 10.3; //cm
+  wheelDiameter = 10.3;// * 3.1415926535; //cm
   wheelRevolutionSteps = 200;
-  stepCmRatio = wheelRevolutionSteps/wheelDiameter;
-  degreeStepRatio = 5.8;
+  degreeStepRatio = 1.8;
+  stepCmRatio = wheelDiameter/wheelRevolutionSteps;
   
   directionPinState = HIGH;
   enablePinState = LOW;

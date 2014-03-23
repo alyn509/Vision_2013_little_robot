@@ -26,7 +26,7 @@ boolean blackLineDetected = false;
 const int StopLedsPin = 14; // maybe not
 const int LeftSignalingLedsPin = 16; // maybe not
 const int RightSignalingLedsPin = 17; // maybe not
-const int delayActions = 1500;
+const int delayActions = 4000;
     
 void sensors_and_devices::init()
 {

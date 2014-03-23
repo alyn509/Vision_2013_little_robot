@@ -47,7 +47,7 @@ void setup()
   pinMode(buttonTestPin, INPUT_PULLUP);
   digitalWrite(led, LOW);
   delay(1000);
-  state = 100;
+  state = 0;
   v1 = true;
   //Serial.begin(9600);
 }
@@ -62,10 +62,10 @@ void loop()
       state++;
       break;
    case 1:                    //wait to complete and rotate left
-      if (motorLeft.isOff() && motorRight.isOff() && !SnD.detectFront() && !SnD.detectBack())
+      if (motorLeft.isOff() && motorRight.isOff())
       {        
         TurnLeft(400,400);
-        //state++;
+        state++;
       }
       break;
     case 2:                    //wait to complete and move forward
@@ -101,6 +101,7 @@ void loop()
       if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {             
         TurnLeft(103,103);
+        SnD.ThrowNet();
         state++;
       }
       break;
@@ -138,13 +139,13 @@ void loop()
       }
       break;
     case 100:
-      motorLeft.setTargetDelay(1500);
-      motorRight.setTargetDelay(1500);
+      motorLeft.setTargetDelay(3000);
+      motorRight.setTargetDelay(3000);
       motorLeft.setDirectionForward();
       motorRight.setDirectionForward();
       motorRight.toggleDirection();     
-      motorLeft.doDistanceInCm(10.3);
-      motorRight.doDistanceInCm(10.3);
+      motorLeft.doDistanceInCm(20);
+      motorRight.doDistanceInCm(20);
       state = STATE_STOP;
       break;
     case 101:
