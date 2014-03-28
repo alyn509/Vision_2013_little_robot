@@ -22,6 +22,8 @@ int stepPin2 = 12;
 int directionPin2 = 13;
 
 int led = 13;
+int degree = 0;
+boolean rotate = false;
 
 elapsedMillis wait_time;
 int time_to_wait, state_to_set_after_wait;
@@ -37,8 +39,8 @@ void MoveForward(float, int);
 void MoveBackward(float, int);
 void TurnLeft(int);
 void TurnRight(int);
-void ArcToRight(int, int);
-void ArcToLeft(int, int);
+void ArcToRight(int, int, boolean);
+void ArcToLeft(int, int, boolean);
 
 void setup()
 {
@@ -60,24 +62,23 @@ void loop()
   switch (state)
   {
     case 0:     //move forward
-      MoveForward(300,1500);
+      MoveForward(283,4000);
       state++;
+      degree=90;
       break;
    case 1:                    //wait to complete and rotate left
       if (motorLeft.isOff() && motorRight.isOff())
-      {        
-        TurnLeft(90);
-        state++;
+      {  
+        ArcToLeft(300,1500,true);
+        if(degree==0)
+          state++;
       }
       break;
     case 2:                    //wait to complete and move forward
       if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {        
-        MoveForward(300,1500);
-        if (v1)
+          MoveForward(283,1500);
           state++;
-        else
-          state = 15;
       }
       break;
     case 3:                    //shoot balls 
@@ -96,102 +97,52 @@ void loop()
           SnD.stopShooting();
           MoveForward(200,1500);
           state++;
+          degree=90;
         }
       }  
       break;
     case 4:        //wait to complete and rotate left
       if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {             
-        TurnLeft(90);
-        SnD.ThrowNet();
-        state++;
+      {   
+        ArcToLeft(300,1500,true);
+        if(degree==0)
+          state++;
       }
       break;
     case 5:             //wait to complete and move forward
       if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {  
-        MoveForward(200, 1500);
+      {         
+        MoveForward(283,1500);
         state++;
       }
       break;
     case 6:        //wait to complete and move backward
       if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
       {        
-        MoveBackward(300, 1500);
+        MoveBackward(283,1500);
         state++;
+        degree=90;
       }
       break;
     case 7:
-      //stop
-      break;
-    case 15:
       if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {             
-        SnD.startShooting();   
-        MoveForward(240,4000);
+      {   
+        ArcToLeft(300,1500,false);
+        if(degree==0)
+          state++;
+      }
+      break;
+    case 8:
+       if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
+      {        
+        MoveBackward(100,4000);;
         state++;
       }
       break;
-    case 16:
-      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {
-        SnD.stopShooting();
-        MoveForward(200,1500);
-        state = 4;
-      }
+    case 9:
+         SnD.ThrowNet();
+         //stop
       break;
-    case 100:
-      motorLeft.setTargetDelay(3000);
-      motorRight.setTargetDelay(3000);
-      motorLeft.setDirectionForward();
-      motorRight.setDirectionForward();
-      motorRight.toggleDirection();     
-      motorLeft.doDistanceInCm(20);
-      motorRight.doDistanceInCm(20);
-      state = STATE_STOP;
-      break;
-    case 101:
-      motorLeft.setTargetDelay(300);
-      motorRight.setTargetDelay(300);
-      motorLeft.setDirectionForward();
-      motorRight.setDirectionForward();
-      motorRight.toggleDirection();     
-      motorLeft.doDistanceInCm(5);
-      motorRight.doDistanceInCm(5);
-      state = STATE_STOP;
-      break;
-    case 102:
-      motorLeft.setTargetDelay(300);
-      motorRight.setTargetDelay(300);
-      motorLeft.setDirectionForward();
-      motorRight.setDirectionForward();
-      motorRight.toggleDirection();     
-      motorLeft.doDistanceInCm(20);
-      motorRight.doDistanceInCm(20);
-      state = STATE_STOP;
-      break;
-    case 200:
-      Serial.print(SnD.detectFront());
-      Serial.print(" ");
-      Serial.println(SnD.detectBack());
-      break;
-    case 300:
-      MoveForward(30000, 200);
-      state = 301;
-      break;
-    case 301:
-      if (motorLeft.isOff() && motorRight.isOff())
-        state = STATE_STOP;
-      if (SnD.detectFront() || SnD.detectBack())
-      {
-        motorLeft.pause();
-        motorRight.pause();
-      }
-      else
-      {
-        motorLeft.unpause();
-        motorRight.unpause();
-      }
     case STATE_STOP:   //stop and throw net
       //SnD.ThrowNet();
       //stop
@@ -223,7 +174,7 @@ void MoveForward(float distance, int step_delay)
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
   motorRight.toggleDirection();  
-  while (counter < distance) 
+ /* while (counter < distance) 
   { 
     if(!SnD.detectFront())
     {
@@ -231,7 +182,9 @@ void MoveForward(float distance, int step_delay)
       motorRight.doDistanceInCm(0.1);
       counter += 0.1;
     }
-  }
+  }*/
+  motorLeft.doDistanceInCm(distance);
+  motorRight.doDistanceInCm(distance);
 }
 
 void MoveBackward(float distance, int step_delay)
@@ -242,7 +195,7 @@ void MoveBackward(float distance, int step_delay)
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
   motorLeft.toggleDirection();    
-  while (counter < distance) 
+/*  while (counter < distance) 
   { 
     if(!SnD.detectBack())
     {
@@ -250,7 +203,9 @@ void MoveBackward(float distance, int step_delay)
       motorRight.doDistanceInCm(0.1);
       counter += 0.1;
     }
-  }
+  }*/
+  motorLeft.doDistanceInCm(distance);
+  motorRight.doDistanceInCm(distance);
 }
 
 void TurnLeft(int angle)
@@ -274,21 +229,33 @@ void TurnRight(int angle)
   motorRight.doDistanceInCm(103.0/angle * 10.3/200);
 }
 
-void ArcToLeft(int radius, int step_delay)
+void ArcToLeft(int radius, int step_delay, boolean forward)
 {
-  for(int i=0;i<90;i++)
+  if(!rotate)
   {
     MoveForward(radius * PI / 180, step_delay);
+    rotate = true;
+  }
+  else
+  {
     TurnLeft(1);
-  }  
+    rotate = false;
+    degree--;
+  }
 }
 
 
-void ArcToRight(int radius, int step_delay)
+void ArcToRight(int radius, int step_delay, boolean forward)
 {
-  for(int i=0;i<90;i++)
+  if(!rotate)
   {
     MoveForward(radius * PI / 180, step_delay);
+    rotate = true;
+  }
+  else
+  {
     TurnRight(1);
+    rotate = false;
+    degree--;
   }
 }
