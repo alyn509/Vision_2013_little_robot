@@ -56,17 +56,17 @@ void loop()
   switch (state)
   {
     case 0:     //move forward
-      MoveForward(283,4000);
+      MoveForward(28.3,4000);
       degree=90;
       waitForMotorsStop(state + 1);
       break;
    case 1:                    //wait to complete and rotate left
-      ArcToLeft(300,1500,true);
+      ArcToLeft(100,5000,true);
       if(degree==0)
          waitForMotorsStop(state + 1);
       break;
     case 2:                    //wait to complete and move forward   
-      MoveForward(283,1500);
+      MoveForward(28.3,1500);
       waitForMotorsStop(state + 1);
       break;
     case 3:                    //shoot balls 
@@ -74,39 +74,39 @@ void loop()
         {
           if(shootedBalls == 0)
             SnD.startShooting();   
-          MoveForward(40,4000);
+          MoveForward(4,4000);
           shootedBalls++;
-          wait(2000, state);
+          wait(1000, state);
         }
         else
         {     
           SnD.stopShooting();
-          MoveForward(200,1500);
+          MoveForward(20,1500);
           waitForMotorsStop(state + 1);
           degree=90;
         }
       break;
     case 4:        //wait to complete and rotate left
-        ArcToLeft(300,1500,true);
+        ArcToLeft(100,5000,true);
         if(degree==0)
           waitForMotorsStop(state + 1);
       break;
     case 5:             //wait to complete and move forward
-        MoveForward(283,1500);
+        MoveForward(28.3,1500);
         waitForMotorsStop(state + 1);
       break;
     case 6:        //wait to complete and move backward
-        MoveBackward(283,1500);
+        MoveBackward(28.3,1500);
         waitForMotorsStop(state + 1);
         degree=90;
       break;
     case 7:
-        ArcToLeft(300,1500,false);
+        ArcToLeft(100,5000,false);
         if(degree==0)
           waitForMotorsStop(state + 1);
       break;
     case 8:   
-        MoveBackward(100,4000);;
+        MoveBackward(10,4000);;
         state++;
       break;
     case 9:
@@ -198,8 +198,8 @@ void TurnLeft(int angle)
   motorRight.setDirectionForward();
   motorRight.toggleDirection();
   motorLeft.toggleDirection();        
-  motorLeft.doDistanceInCm(103.0/angle * 10.3/200);
-  motorRight.doDistanceInCm(103.0/angle * 10.3/200);
+  motorLeft.doSteps(103.0 / 90 *angle);
+  motorRight.doSteps(103.0 / 90 *angle);
 }
 
 
@@ -207,8 +207,8 @@ void TurnRight(int angle)
 {  
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
-  motorLeft.doDistanceInCm(103.0/angle * 10.3/200);
-  motorRight.doDistanceInCm(103.0/angle * 10.3/200);
+  motorLeft.doSteps(103.0 / 90 *angle);
+  motorRight.doSteps(103.0 / 90 *angle);
 }
 
 void ArcToLeft(int radius, int step_delay, boolean forward)
@@ -227,6 +227,7 @@ void ArcToLeft(int radius, int step_delay, boolean forward)
     rotate = false;
     degree--;
   }
+  waitForMotorsStop(state);
 }
 
 
@@ -246,4 +247,5 @@ void ArcToRight(int radius, int step_delay, boolean forward)
     rotate = false;
     degree--;
   }
+  waitForMotorsStop(state);
 }
