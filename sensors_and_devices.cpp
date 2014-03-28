@@ -10,12 +10,21 @@ const int ThrowNetPin = 15;
 const int ColourPin1 = 0;   //  8 9 10 11 12 analog
 const int ColourPin2 = 0;
 const int ColourPin3 = 0;
+<<<<<<< HEAD
 const int ShootBallPin = 16;
 const int PrepareBallPin = 17;
 const int FrontSenzorPin = 18;
 const int BackSenzorPin = 19;
 const int LeftSenzorPin = 20;
 const int RightSenzorPin = 21;
+=======
+const int ShootBallPin = 19;
+const int PrepareBallPin = 20;
+const int FrontSenzorPin = 17;
+const int BackSenzorPin = 18;
+const int LeftSenzorPin = 43;
+const int RightSenzorPin = 42;
+>>>>>>> origin/tests
  
 boolean frontDetected = false;
 boolean leftDetected = false;
