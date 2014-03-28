@@ -84,11 +84,6 @@ void VisionStepper::doLoop()
           if ((!raiseSpeed && currentDelay > targetDelay) ||
               (raiseSpeed && currentDelay < targetDelay))
               foundTargetSpeed = true;
-        if (foundTargetSpeed)
-          digitalWrite(13, HIGH);
-        else
-          digitalWrite(13, LOW);
-        //Serial.println(currentDelay);
         stepsMadeSoFar++;
         stepsRemaining--;
         if (stepsRemaining <= stepSpeedCounter)

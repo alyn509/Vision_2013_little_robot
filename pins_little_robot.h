@@ -1,8 +1,8 @@
-const int ColourPin1 = 8;	        //  analog
-const int ColourPin2 = 9;	        //  analog
-const int ColourPin3 = 10;	        //  analog
-const int ColourPin4 = 11;	        //  analog
-const int ColourPin5 = 12;	        //  analog
+const int ColourSensorPin1 = 8;	        //  analog
+const int ColourSensorPin2 = 9;	        //  analog
+const int ColourSensorPin3 = 10;	        //  analog
+const int ColourSensorPin4 = 11;	        //  analog
+const int ColourSensorPin5 = 12;	        //  analog
 const int ThrowNetPin = 15;
 const int ShootBallPin = 16;
 const int PrepareBallPin = 17;
@@ -20,3 +20,6 @@ const int buttonTestPin = 40;
 const int enablePinRight = 11;
 const int stepPinRight = 12;
 const int directionPinRight = 13;
+
+const int colorRedPin = 31;
+const int colorYellowPin = 33;
