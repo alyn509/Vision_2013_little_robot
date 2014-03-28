@@ -1,5 +1,4 @@
 #include <elapsedMillis.h>
-#include <Servo.h>
 #include <Stepper.h>
 #include <LiquidCrystal.h>
 #include <TimerThree.h>
@@ -37,12 +36,12 @@ void setup()
   
   motorLeft.init();
   motorLeft.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
-  motorLeft.initDelays(4000, 100, 1500); //start, high, max
+  motorLeft.initDelays(8000, 100, 400); //start, high, max
   motorLeft.initSizes(10.3, 200); //diameter (cm), steps per revolution
   
   motorRight.init();
   motorRight.initPins(enablePinRight, directionPinRight, stepPinRight);
-  motorRight.initDelays(4000, 100, 1500); //start, high, max
+  motorRight.initDelays(8000, 100, 400); //start, high, max
   motorRight.initSizes(10.3, 200); //diameter (cm), steps per revolution
   
   pinMode(buttonTestPin, INPUT_PULLUP);
@@ -56,17 +55,17 @@ void loop()
   switch (state)
   {
     case 0:     //move forward
-      MoveForward(28.3,4000);
+      MoveForward(50.0,4000);
       degree=90;
       waitForMotorsStop(state + 1);
       break;
    case 1:                    //wait to complete and rotate left
-      ArcToLeft(100,15000,true);
-         waitForMotorsStop(state + 1);
+      TurnRight(180);
+      waitForMotorsStop(state + 1);
       break;
     case 2:                    //wait to complete and move forward   
-      MoveForward(28.3,4000);
-      waitForMotorsStop(state + 1);
+      MoveForward(50.0,4000);
+      waitForMotorsStop(0);
       break;
     case 3:                    //shoot balls 
         if(shootedBalls < 6)
@@ -126,6 +125,16 @@ void loop()
         state = state_to_set_after_wait;
       }
       break;
+  }
+  if (SnD.detectFront() || SnD.detectBack() || SnD.detectLeft() || SnD.detectRight())
+  {
+    motorLeft.pause();
+    motorRight.pause();
+  }
+  else
+  {
+    motorLeft.unpause();
+    motorRight.unpause();
   }
   motorLeft.doLoop();
   motorRight.doLoop();

@@ -25,10 +25,10 @@ void sensors_and_devices::init()
   attachInterrupt(FrontSenzorPin, SenzorFront, CHANGE);
   
   pinMode(4, INPUT);
-  attachInterrupt(4, SenzorLeft, CHANGE);
+  //attachInterrupt(4, SenzorLeft, CHANGE);
   
   pinMode(5, INPUT);
-  attachInterrupt(5, SenzorRight, CHANGE);
+  //attachInterrupt(5, SenzorRight, CHANGE);
   
   pinMode(PrepareBallPin, OUTPUT);
   digitalWrite(PrepareBallPin, LOW);
@@ -77,6 +77,16 @@ void sensors_and_devices::SenzorBack()
 boolean sensors_and_devices::detectBack()
 {
   return digitalRead(BackSenzorPin);
+}
+
+boolean sensors_and_devices::detectLeft()
+{
+  return digitalRead(LeftSenzorPin);
+}
+
+boolean sensors_and_devices::detectRight()
+{
+  return digitalRead(RightSenzorPin);
 }
 
 void sensors_and_devices::SenzorLeft()
