@@ -13,12 +13,12 @@ const int RightSenzorPin = 21;
 
 const int wheelDiameter = 10.3;         //cm
 
-const int enablePin = 8;
-const int stepPin = 9;
-const int directionPin = 10;
+const int enablePinLeft = 8;
+const int stepPinLeft = 9;
+const int directionPinLeft = 10;
 
 const int buttonTestPin = 40;
 
-const int enablePin2 = 11;
-const int stepPin2 = 12;
-const int directionPin2 = 13;
+const int enablePinRight = 11;
+const int stepPinRight = 12;
+const int directionPinRight = 13;

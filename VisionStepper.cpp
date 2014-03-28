@@ -1,5 +1,4 @@
 #include "VisionStepper.h"
-#include "pins_little_robot.h"
 
 #define STOPPED 0
 #define STOPPING 1
@@ -8,40 +7,46 @@
 #define PAUSE 4
 #define STARTING 5
 
-void motors::init(int enablePin, int directionPin, int stepPin)
+void VisionStepper::init()
+{
+  stepsMadeSoFar = 0;
+  stepsRemaining = 0;
+  globalState = STOPPED;
+}
+
+void VisionStepper::initPins(int enablePin, int directionPin, int stepPin)
 {
   this->enablePin = enablePin;
   this->directionPin = directionPin;
   this->stepPin = stepPin;
   
-  wheelCircumference = wheelDiameter * PI;
-  wheelRevolutionSteps = 200;
-  stepCmRatio = wheelRevolutionSteps / wheelCircumference;
-  
-  directionPinState = HIGH;
-  enablePinState = LOW;
-  stepPinState = LOW;
-  stepsMadeSoFar = 0;
-  stepsRemaining = 0;
-  maxSpeedDelay = 1500;
-  startSpeedDelay = 4000;
-  highPhaseDelay = 100;
-  doSetup();
-}
-
-void motors::doSetup()
-{
   pinMode(directionPin, OUTPUT);
+  directionPinState = HIGH;
   digitalWrite(directionPin, HIGH);
   
   pinMode(enablePin, OUTPUT);
+  enablePinState = LOW;
   digitalWrite(enablePin, enablePinState);
   
   pinMode(stepPin, OUTPUT);
+  stepPinState = LOW;
   digitalWrite(stepPin, stepPinState);
 }
 
-void motors::doLoop()
+void VisionStepper::initDelays(int startSpeedDelay, int highPhaseDelay, int maxSpeedDelay)
+{
+  this->maxSpeedDelay = maxSpeedDelay;
+  this->startSpeedDelay = startSpeedDelay;
+  this->highPhaseDelay = highPhaseDelay;
+}
+
+void VisionStepper::initSizes(int wheelDiameter, int wheelRevolutionSteps)
+{
+  int wheelCircumference = wheelDiameter * PI;
+  stepCmRatio = wheelRevolutionSteps / wheelCircumference;
+}
+
+void VisionStepper::doLoop()
 {
   switch (globalState) {
     case STOPPED:
@@ -113,7 +118,7 @@ void motors::doLoop()
   }
 }
 
-void motors::pause()
+void VisionStepper::pause()
 {
   if (globalState == PAUSE)
     return;
@@ -121,12 +126,12 @@ void motors::pause()
   globalState = PAUSE;
 }
 
-void motors::unpause()
+void VisionStepper::unpause()
 {
   globalState = old_state;
 }
 
-void motors::emergencyStop()
+void VisionStepper::emergencyStop()
 {
   /*
   if (stepsRemaining > numberOfDeaccelerationSteps)
@@ -134,12 +139,12 @@ void motors::emergencyStop()
     */
 }
 
-void motors::setMaxSpeed()
+void VisionStepper::setMaxSpeed()
 {
   setTargetDelay(maxSpeedDelay);
 }
 
-void motors::setTargetDelay(int targetDelay)
+void VisionStepper::setTargetDelay(int targetDelay)
 {
   if (this->targetDelay == targetDelay)
     return;
@@ -147,30 +152,30 @@ void motors::setTargetDelay(int targetDelay)
   foundTargetSpeed = false;
 }
 
-boolean motors::isOff()
+boolean VisionStepper::isOff()
 {
   return globalState == STOPPED;
 }
 
-void motors::setDirectionForward()
+void VisionStepper::setDirectionForward()
 {
   directionPinState = HIGH;
   digitalWrite(directionPin, directionPinState);
 }
 
-void motors::toggleDirection()
+void VisionStepper::toggleDirection()
 {
   directionPinState = !directionPinState;
   digitalWrite(directionPin, directionPinState);
 }
 
 
-boolean motors::isAtTargetSpeed()
+boolean VisionStepper::isAtTargetSpeed()
 {
   return foundTargetSpeed;
 }
 
-void motors::doSteps(int stepNumber)
+void VisionStepper::doSteps(int stepNumber)
 {
   stepsMadeSoFar = 0;
   stepsRemaining = stepNumber * 2; //a step is made out of a LOW to HIGH transition
@@ -178,7 +183,7 @@ void motors::doSteps(int stepNumber)
 }
 
 
-void motors::doDistanceInCm(float distance)
+void VisionStepper::doDistanceInCm(float distance)
 {
   doSteps(distance * stepCmRatio);
 }

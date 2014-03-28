@@ -16,8 +16,8 @@ boolean rotate = false;
 
 elapsedMillis wait_time;
 int time_to_wait, state_to_set_after_wait;
-motors motorLeft;
-motors motorRight;
+VisionStepper motorLeft;
+VisionStepper motorRight;
 sensors_and_devices SnD;
 
 int state;
@@ -33,8 +33,17 @@ void ArcToLeft(int, int, boolean);
 void setup()
 {
   SnD.init();
-  motorLeft.init(enablePin, directionPin, stepPin);
-  motorRight.init(enablePin2, directionPin2, stepPin2);
+  
+  motorLeft.init();
+  motorLeft.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
+  motorLeft.initDelays(4000, 100, 1500); //start, high, max
+  motorLeft.initSizes(10.3, 200); //diameter (cm), steps per revolution
+  
+  motorRight.init();
+  motorRight.initPins(enablePinRight, directionPinRight, stepPinRight);
+  motorRight.initDelays(4000, 100, 1500); //start, high, max
+  motorRight.initSizes(10.3, 200); //diameter (cm), steps per revolution
+  
   pinMode(buttonTestPin, INPUT_PULLUP);
   delay(1000);
   state = 0;

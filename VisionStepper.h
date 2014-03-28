@@ -4,9 +4,12 @@
 #include "Arduino.h"
 #include <elapsedMillis.h>
 
-class motors {
+class VisionStepper {
   public:
-     void init(int enablePin, int directionPin, int stepPin);
+    void init();
+    void initPins(int enablePin, int directionPin, int stepPin);
+    void initDelays(int startSpeedDelay, int highPhaseDelay, int maxSpeedDelay);
+    void initSizes(int wheelDiameter, int wheelRevolutionSteps);
     void doLoop();
     void toggleDirection();
     void setDirectionForward();
@@ -33,9 +36,6 @@ class motors {
     elapsedMicros stepTimer;
     elapsedMillis stopTimer;
     
-    float wheelDiameter;
-    float wheelRevolutionSteps;
-    float wheelCircumference;
     float stepCmRatio; // steps for a cm
 };
 
