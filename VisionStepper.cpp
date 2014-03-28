@@ -180,5 +180,5 @@ void motors::doSteps(int stepNumber)
 
 void motors::doDistanceInCm(float distance)
 {
-  doSteps(distance * stepCmRatio / (wheelDiameter * PI));
+  doSteps(distance * stepCmRatio);
 }
