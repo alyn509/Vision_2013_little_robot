@@ -233,7 +233,10 @@ void ArcToLeft(int radius, int step_delay, boolean forward)
 {
   if(!rotate)
   {
-    MoveForward(radius * PI / 180, step_delay);
+    if(forward)
+      MoveForward(radius * PI / 180, step_delay);
+    else 
+      MoveBackward(radius * PI / 180, step_delay);
     rotate = true;
   }
   else
@@ -249,7 +252,10 @@ void ArcToRight(int radius, int step_delay, boolean forward)
 {
   if(!rotate)
   {
-    MoveForward(radius * PI / 180, step_delay);
+    if(forward)
+      MoveForward(radius * PI / 180, step_delay);
+    else 
+      MoveBackward(radius * PI / 180, step_delay);
     rotate = true;
   }
   else
