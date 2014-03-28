@@ -61,12 +61,11 @@ void loop()
       waitForMotorsStop(state + 1);
       break;
    case 1:                    //wait to complete and rotate left
-      ArcToLeft(100,5000,true);
-      if(degree==0)
+      ArcToLeft(100,15000,true);
          waitForMotorsStop(state + 1);
       break;
     case 2:                    //wait to complete and move forward   
-      MoveForward(28.3,1500);
+      MoveForward(28.3,4000);
       waitForMotorsStop(state + 1);
       break;
     case 3:                    //shoot balls 
@@ -74,7 +73,7 @@ void loop()
         {
           if(shootedBalls == 0)
             SnD.startShooting();   
-          MoveForward(4,4000);
+          MoveForward(4,2000);
           shootedBalls++;
           wait(1000, state);
         }
@@ -88,7 +87,6 @@ void loop()
       break;
     case 4:        //wait to complete and rotate left
         ArcToLeft(100,5000,true);
-        if(degree==0)
           waitForMotorsStop(state + 1);
       break;
     case 5:             //wait to complete and move forward
@@ -102,7 +100,6 @@ void loop()
       break;
     case 7:
         ArcToLeft(100,5000,false);
-        if(degree==0)
           waitForMotorsStop(state + 1);
       break;
     case 8:   
@@ -213,21 +210,13 @@ void TurnRight(int angle)
 
 void ArcToLeft(int radius, int step_delay, boolean forward)
 {
-  if(!rotate)
-  {
-    if(forward)
-      MoveForward(radius * PI / 180, step_delay);
-    else 
-      MoveBackward(radius * PI / 180, step_delay);
-    rotate = true;
-  }
-  else
-  {
-    TurnLeft(1);
-    rotate = false;
-    degree--;
-  }
-  waitForMotorsStop(state);
+  motorLeft.setTargetDelay(step_delay * 2);         
+  motorRight.setTargetDelay(step_delay);
+  motorLeft.setDirectionForward();
+  motorRight.setDirectionForward();
+  motorRight.toggleDirection();
+  motorLeft.doDistanceInCm(radius / 4);
+  motorRight.doDistanceInCm(radius/2);
 }
 
 
