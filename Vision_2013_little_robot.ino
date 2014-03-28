@@ -10,6 +10,7 @@
 #define DELAY_BETWEEN_TOGGLE 500
 #define STATE_STOP -1
 #define STATE_WAIT -2
+#define STATE_WAIT_MOTORS_STOP -3
 
 int degree = 0;
 boolean rotate = false;
@@ -56,27 +57,19 @@ void loop()
   {
     case 0:     //move forward
       MoveForward(283,4000);
-      state++;
       degree=90;
+      waitForMotorsStop(state + 1);
       break;
    case 1:                    //wait to complete and rotate left
-      if (motorLeft.isOff() && motorRight.isOff())
-      {  
-        ArcToLeft(300,1500,true);
-        if(degree==0)
-          state++;
-      }
+      ArcToLeft(300,1500,true);
+      if(degree==0)
+         waitForMotorsStop(state + 1);
       break;
-    case 2:                    //wait to complete and move forward
-      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {        
-          MoveForward(283,1500);
-          state++;
-      }
+    case 2:                    //wait to complete and move forward   
+      MoveForward(283,1500);
+      waitForMotorsStop(state + 1);
       break;
     case 3:                    //shoot balls 
-      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {             
         if(shootedBalls < 6)
         {
           if(shootedBalls == 0)
@@ -89,48 +82,32 @@ void loop()
         {     
           SnD.stopShooting();
           MoveForward(200,1500);
-          state++;
+          waitForMotorsStop(state + 1);
           degree=90;
         }
-      }  
       break;
     case 4:        //wait to complete and rotate left
-      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {   
         ArcToLeft(300,1500,true);
         if(degree==0)
-          state++;
-      }
+          waitForMotorsStop(state + 1);
       break;
     case 5:             //wait to complete and move forward
-      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {         
         MoveForward(283,1500);
-        state++;
-      }
+        waitForMotorsStop(state + 1);
       break;
     case 6:        //wait to complete and move backward
-      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {        
         MoveBackward(283,1500);
-        state++;
+        waitForMotorsStop(state + 1);
         degree=90;
-      }
       break;
     case 7:
-      if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {   
         ArcToLeft(300,1500,false);
         if(degree==0)
-          state++;
-      }
+          waitForMotorsStop(state + 1);
       break;
-    case 8:
-       if (motorLeft.isOff() && motorRight.isOff())// && !SnD.detectFront() && !SnD.detectBack())
-      {        
+    case 8:   
         MoveBackward(100,4000);;
         state++;
-      }
       break;
     case 9:
          SnD.ThrowNet();
@@ -146,6 +123,12 @@ void loop()
         state = state_to_set_after_wait;
       }
       break;
+    case STATE_WAIT_MOTORS_STOP:
+      if (motorLeft.isOff() && motorRight.isOff())
+      {
+        state = state_to_set_after_wait;
+      }
+      break;
   }
   motorLeft.doLoop();
   motorRight.doLoop();
@@ -156,6 +139,12 @@ void wait(int time_in_ms, int state_after)
   state = STATE_WAIT;
   wait_time = 0;
   time_to_wait = time_in_ms;
+  state_to_set_after_wait = state_after;
+}
+
+void waitForMotorsStop(int state_after)
+{
+  state = STATE_WAIT_MOTORS_STOP;
   state_to_set_after_wait = state_after;
 }
 
