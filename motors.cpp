@@ -4,7 +4,8 @@
 #define STOPPING 1
 #define STOPPING_ENABLE_ON 2
 #define RUNNING 3
-#define STARTING 4
+#define PAUSE 4
+#define STARTING 5
 
 void motors::init(int enablePin, int directionPin, int stepPin)
 {
@@ -13,9 +14,9 @@ void motors::init(int enablePin, int directionPin, int stepPin)
   this->stepPin = stepPin;
   
   wheelDiameter = 10.3; //cm
+  wheelCircumference = wheelDiameter * PI;
   wheelRevolutionSteps = 200;
-  stepCmRatio = wheelRevolutionSteps/wheelDiameter;
-  degreeStepRatio = 5.8;
+  stepCmRatio = wheelRevolutionSteps / wheelCircumference;
   
   directionPinState = HIGH;
   enablePinState = LOW;
@@ -98,6 +99,8 @@ void motors::doLoop()
         //Serial.println(currentStepDelay);
       }
       break;
+    case PAUSE:
+      break;
     case STARTING:
       enablePinState = HIGH;
       digitalWrite(enablePin, enablePinState);
@@ -110,6 +113,18 @@ void motors::doLoop()
   }
 }
 
+void motors::pause()
+{
+  if (globalState == PAUSE)
+    return;
+  old_state = globalState;
+  globalState = PAUSE;
+}
+
+void motors::unpause()
+{
+  globalState = old_state;
+}
 
 void motors::emergencyStop()
 {

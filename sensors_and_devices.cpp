@@ -6,16 +6,16 @@
 #define STARTING 3
 
 boolean FirstBallFlag = true;
-const int ThrowNetPin = 21;
-const int ColourPin1 = 0;
+const int ThrowNetPin = 15;
+const int ColourPin1 = 0;   //  8 9 10 11 12 analog
 const int ColourPin2 = 0;
 const int ColourPin3 = 0;
-const int ShootBallPin = 19;
-const int PrepareBallPin = 20;
-const int FrontSenzorPin = 46;
-const int BackSenzorPin = 45;
-const int LeftSenzorPin = 43;
-const int RightSenzorPin = 42;
+const int ShootBallPin = 16;
+const int PrepareBallPin = 17;
+const int FrontSenzorPin = 18;
+const int BackSenzorPin = 19;
+const int LeftSenzorPin = 20;
+const int RightSenzorPin = 21;
  
 boolean frontDetected = false;
 boolean leftDetected = false;
@@ -26,16 +26,29 @@ boolean blackLineDetected = false;
 const int StopLedsPin = 14; // maybe not
 const int LeftSignalingLedsPin = 16; // maybe not
 const int RightSignalingLedsPin = 17; // maybe not
-const int delayActions = 1500;
+const int delayActions = 4000;
     
 void sensors_and_devices::init()
 {
-    attachInterrupt(1, ColourSensor, CHANGE);
-    attachInterrupt(0, SenzorFront, CHANGE);
-    attachInterrupt(4, SenzorLeft, CHANGE);
-    attachInterrupt(5, SenzorRight, CHANGE);
+  pinMode(1, INPUT);
+  attachInterrupt(1, ColourSensor, CHANGE);
+  
+  pinMode(0, INPUT);
+  attachInterrupt(FrontSenzorPin, SenzorFront, CHANGE);
+  
+  pinMode(4, INPUT);
+  attachInterrupt(4, SenzorLeft, CHANGE);
+  
+  pinMode(5, INPUT);
+  attachInterrupt(5, SenzorRight, CHANGE);
+  
+  pinMode(PrepareBallPin, OUTPUT);
   digitalWrite(PrepareBallPin, LOW);
+  
+  pinMode(ShootBallPin, OUTPUT);
   digitalWrite(ShootBallPin, LOW);
+  
+  pinMode(ThrowNetPin, OUTPUT);
   digitalWrite(ThrowNetPin, LOW);
 }
 
@@ -63,9 +76,19 @@ void sensors_and_devices::SenzorFront()
   frontDetected = !frontDetected;
 }
 
+boolean sensors_and_devices::detectFront()
+{
+  return digitalRead(FrontSenzorPin);
+}
+
 void sensors_and_devices::SenzorBack()
 {
   backDetected = !backDetected;
+}
+
+boolean sensors_and_devices::detectBack()
+{
+  return digitalRead(BackSenzorPin);
 }
 
 void sensors_and_devices::SenzorLeft()
@@ -80,6 +103,6 @@ void sensors_and_devices::SenzorRight()
 
 void sensors_and_devices::ColourSensor()
 {  
-  attachInterrupt(1, SenzorBack, CHANGE);
+  attachInterrupt(BackSenzorPin, SenzorBack, CHANGE);
   blackLineDetected = !blackLineDetected;
 }

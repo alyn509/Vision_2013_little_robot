@@ -17,6 +17,8 @@ class motors {
     void doDistanceInCm(float distance);
     void emergencyStop();
     void setMaxSpeed();
+    void pause();
+    void unpause();
   private:
     void doSetup();
   private:
@@ -26,14 +28,15 @@ class motors {
     unsigned long stepsMadeSoFar, stepsRemaining;
     float maxSpeedDelay, startSpeedDelay, currentDelay, targetDelay, highPhaseDelay;
     int stepSpeedCounter;
+    int old_state;
     boolean foundTargetSpeed, raiseSpeed;
     elapsedMicros stepTimer;
     elapsedMillis stopTimer;
     
     float wheelDiameter;
     float wheelRevolutionSteps;
+    float wheelCircumference;
     float stepCmRatio; // steps for a cm
-    float degreeStepRatio;
 };
 
 #endif
