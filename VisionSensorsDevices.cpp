@@ -91,7 +91,7 @@ boolean sensors_and_devices::detectRight()
 
 int sensors_and_devices::detectColor()
 {
-  return analogRead(ColourSensorPin3);
+  return analogRead(ColourSensorPin5);
 }
 
 void sensors_and_devices::SenzorLeft()

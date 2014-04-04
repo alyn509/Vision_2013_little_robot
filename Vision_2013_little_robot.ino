@@ -24,20 +24,21 @@ int shootedBalls = 0;
 void setup()
 {
   SnD.init();
+  Serial.begin(9600);
   
   motorLeft.init();
-  motorLeft.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
+  motorRight.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
   motorLeft.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorLeft.initSizes(wheelDiameter, wheelRevolutionSteps);
   
   motorRight.init();
-  motorRight.initPins(enablePinRight, directionPinRight, stepPinRight);
+  motorLeft.initPins(enablePinRight, directionPinRight, stepPinRight);
   motorRight.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorRight.initSizes(wheelDiameter, wheelRevolutionSteps);
   
   pinMode(buttonTestPin, INPUT_PULLUP);
   delay(1000);
-  state = 0;
+  state = 4;
 }
 
 void loop()
@@ -45,8 +46,8 @@ void loop()
   switch (state)
   {
     case 0:     //move forward
-      MoveForward(50.0,4000);
-      waitForMotorsStop(state + 2);
+      MoveBackward(50.0,1000);
+      waitForMotorsStop(state + 1);
       break;
    case 1:
       Serial.println(SnD.detectColor());
@@ -62,8 +63,8 @@ void loop()
       waitForMotorsStop(state + 1);
       break;
     case 3:                    //wait to complete and move forward   
-      MoveForward(50.0,4000);
-      waitForMotorsStop(0);
+      MoveForward(50,1000);
+      waitForMotorsStop(10);
       break;
     case 4:                    //shoot balls 
         if(shootedBalls < 6)
@@ -78,12 +79,12 @@ void loop()
         {     
           SnD.stopShooting();
           MoveForward(20,1500);
-          waitForMotorsStop(state + 1);
+          waitForMotorsStop(10);
         }
       break;
     case 5:        //wait to complete and rotate left
         ArcToLeft(100,5000,true);
-          waitForMotorsStop(state + 1);
+        waitForMotorsStop(state + 1);
       break;
     case 6:             //wait to complete and move forward
         MoveForward(28.3,1500);
@@ -120,7 +121,7 @@ void loop()
       }
       break;
   }
-  if (SnD.detectFront() || SnD.detectBack() || SnD.detectLeft() || SnD.detectRight())
+  /*if (SnD.detectFront() || SnD.detectBack() || SnD.detectLeft() || SnD.detectRight())
   {
     motorLeft.pause();
     motorRight.pause();
@@ -129,7 +130,7 @@ void loop()
   {
     motorLeft.unpause();
     motorRight.unpause();
-  }
+  }*/
   motorLeft.doLoop();
   motorRight.doLoop();
 }
