@@ -27,18 +27,18 @@ void setup()
   Serial.begin(9600);
   
   motorLeft.init();
-  motorRight.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
+  motorLeft.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
   motorLeft.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorLeft.initSizes(wheelDiameter, wheelRevolutionSteps);
   
   motorRight.init();
-  motorLeft.initPins(enablePinRight, directionPinRight, stepPinRight);
+  motorRight.initPins(enablePinRight, directionPinRight, stepPinRight);
   motorRight.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorRight.initSizes(wheelDiameter, wheelRevolutionSteps);
   
   pinMode(buttonTestPin, INPUT_PULLUP);
   delay(1000);
-  state = 4;
+  state = 0;
 }
 
 void loop()
@@ -46,8 +46,8 @@ void loop()
   switch (state)
   {
     case 0:     //move forward
-      MoveBackward(50.0,1000);
-      waitForMotorsStop(state + 1);
+      MoveForward(50.0,4000);
+      waitForMotorsStop(10);
       break;
    case 1:
       Serial.println(SnD.detectColor());
