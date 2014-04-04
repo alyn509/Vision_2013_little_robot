@@ -19,16 +19,16 @@ const int delayActions = 4000;
 void sensors_and_devices::init()
 {
   pinMode(1, INPUT);
-  attachInterrupt(1, ColourSensor, CHANGE);
+  attachInterrupt(BackSenzorPin, SenzorBack, CHANGE);
   
   pinMode(0, INPUT);
   attachInterrupt(FrontSenzorPin, SenzorFront, CHANGE);
   
   pinMode(4, INPUT);
-  //attachInterrupt(4, SenzorLeft, CHANGE);
+  attachInterrupt(LeftSenzorPin, SenzorLeft, CHANGE);
   
   pinMode(5, INPUT);
-  //attachInterrupt(5, SenzorRight, CHANGE);
+  attachInterrupt(RightSenzorPin, SenzorRight, CHANGE);
   
   pinMode(PrepareBallPin, OUTPUT);
   digitalWrite(PrepareBallPin, LOW);
@@ -89,6 +89,11 @@ boolean sensors_and_devices::detectRight()
   return digitalRead(RightSenzorPin);
 }
 
+int sensors_and_devices::detectColor()
+{
+  return analogRead(ColourSensorPin3);
+}
+
 void sensors_and_devices::SenzorLeft()
 {
   leftDetected = !leftDetected;
@@ -101,6 +106,5 @@ void sensors_and_devices::SenzorRight()
 
 void sensors_and_devices::ColourSensor()
 {  
-  attachInterrupt(BackSenzorPin, SenzorBack, CHANGE);
   blackLineDetected = !blackLineDetected;
 }

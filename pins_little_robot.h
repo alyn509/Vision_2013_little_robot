@@ -1,8 +1,8 @@
 const int ColourSensorPin1 = 8;	        //  analog
 const int ColourSensorPin2 = 9;	        //  analog
-const int ColourSensorPin3 = 10;	        //  analog
-const int ColourSensorPin4 = 11;	        //  analog
-const int ColourSensorPin5 = 12;	        //  analog
+const int ColourSensorPin3 = 10;	//  analog
+const int ColourSensorPin4 = 11;	//  analog
+const int ColourSensorPin5 = 12;	//  analog
 const int ThrowNetPin = 15;
 const int ShootBallPin = 16;
 const int PrepareBallPin = 17;

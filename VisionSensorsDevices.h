@@ -16,6 +16,7 @@ class sensors_and_devices {
     boolean detectBack();
     boolean detectLeft();
     boolean detectRight();
+    int detectColor();
     void ThrowNet();
     void startShooting();
     void stopShooting();
