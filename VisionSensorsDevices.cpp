@@ -18,17 +18,12 @@ const int delayActions = 4000;
     
 void sensors_and_devices::init()
 {
-  pinMode(1, INPUT);
+  /*
   attachInterrupt(BackSenzorPin, SenzorBack, CHANGE);
-  
-  pinMode(0, INPUT);
   attachInterrupt(FrontSenzorPin, SenzorFront, CHANGE);
-  
-  pinMode(4, INPUT);
   attachInterrupt(LeftSenzorPin, SenzorLeft, CHANGE);
-  
-  pinMode(5, INPUT);
   attachInterrupt(RightSenzorPin, SenzorRight, CHANGE);
+  */
   
   pinMode(PrepareBallPin, OUTPUT);
   digitalWrite(PrepareBallPin, LOW);
