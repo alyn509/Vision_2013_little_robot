@@ -19,12 +19,12 @@ VisionStepper motorRight;
 sensors_and_devices SnD;
 
 int state;
-int shootedBalls = 0;
+int shotBalls = 0;
 
 void setup()
 {
   SnD.init();
-  Serial.begin(9600);
+ // Serial.begin(9600);
   
   motorLeft.init();
   motorLeft.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
@@ -36,7 +36,7 @@ void setup()
   motorRight.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorRight.initSizes(wheelDiameter, wheelRevolutionSteps);
   
-  pinMode(buttonTestPin, INPUT_PULLUP);
+  //pinMode(buttonTestPin, INPUT_PULLUP);
   delay(1000);
   state = 0;
 }
@@ -46,67 +46,74 @@ void loop()
   switch (state)
   {
     case 0:     //move forward
-      MoveForward(50.0,4000);
-      waitForMotorsStop(10);
+      MoveForward(60,slowSpeedDelay);
+      waitForMotorsStop(state + 2);
       break;
    case 1:
-      Serial.println(SnD.detectColor());
+      //Serial.println(SnD.detectColor());
       /*if(SnD.detectColor() == BLACK)
       {
         motorLeft.pause();
         motorRight.pause();
         state++;
       }*/
+      
       break;
    case 2:                    //wait to complete and rotate left
-      TurnRight(90);
+      TurnLeft(85);
       waitForMotorsStop(state + 1);
       break;
     case 3:                    //wait to complete and move forward   
-      MoveForward(50,1000);
-      waitForMotorsStop(10);
+      MoveForward(40,slowSpeedDelay);
+      waitForMotorsStop(state + 1);
       break;
     case 4:                    //shoot balls 
-        if(shootedBalls < 6)
-        {
-          if(shootedBalls == 0)
-            SnD.startShooting();   
-          MoveForward(4,2000);
-          shootedBalls++;
-          wait(1000, state);
+        if(shotBalls < 6)
+        {  
+          if(shotBalls == 0){
+            SnD.startShooting();
+          }
+         else{
+            SnD.stopShooting();
+            delay(100);
+            SnD.startShooting();
+         }
+         MoveForward(5,slowSpeedDelay);
+         shotBalls++;
+         wait(1000, state);
         }
         else
         {     
           SnD.stopShooting();
-          MoveForward(20,1500);
-          waitForMotorsStop(10);
+          MoveForward(55,slowSpeedDelay);
+          waitForMotorsStop(state + 1);
         }
       break;
     case 5:        //wait to complete and rotate left
-        ArcToLeft(100,5000,true);
+        TurnLeft(85);
         waitForMotorsStop(state + 1);
       break;
     case 6:             //wait to complete and move forward
-        MoveForward(28.3,1500);
+        MoveForward(80, slowSpeedDelay);
         waitForMotorsStop(state + 1);
       break;
     case 7:        //wait to complete and move backward
-        MoveBackward(28.3,1500);
+        MoveBackward(60, slowSpeedDelay);
         waitForMotorsStop(state + 1);
       break;
     case 8:
-        ArcToLeft(100,5000,false);
+        TurnRight(85);
         waitForMotorsStop(state + 1);
       break;
     case 9:   
-        MoveBackward(10,4000);;
-        state = STATE_STOP;
+        MoveBackward(55,slowSpeedDelay);
+        waitForMotorsStop(state + 1);
       break;
     case 10:
+        SnD.ThrowNet();
+        state = STATE_STOP;
       break;
-    case STATE_STOP:   //stop and throw net
-      SnD.ThrowNet();
-      //stop
+    case STATE_STOP:   //stop
       break;
     case STATE_WAIT:
       if (wait_time > time_to_wait)
@@ -121,18 +128,9 @@ void loop()
       }
       break;
   }
-  /*if (SnD.detectFront() || SnD.detectBack() || SnD.detectLeft() || SnD.detectRight())
-  {
-    motorLeft.pause();
-    motorRight.pause();
-  }
-  else
-  {
-    motorLeft.unpause();
-    motorRight.unpause();
-  }*/
-  motorLeft.doLoop();
+  
   motorRight.doLoop();
+  motorLeft.doLoop();
 }
 
 void wait(int time_in_ms, int state_after)
@@ -156,7 +154,7 @@ void MoveForward(float distance, int step_delay)
   motorRight.setTargetDelay(step_delay);
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
-  motorRight.toggleDirection();  
+  motorRight.toggleDirection(); 
   motorLeft.doDistanceInCm(distance);
   motorRight.doDistanceInCm(distance);
 }
@@ -178,13 +176,9 @@ void TurnLeft(int angle)
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
   motorRight.toggleDirection();
-  motorLeft.toggleDirection();        
-  motorLeft.doSteps(wheelDiameter * 10 / 90 * angle);
-  motorRight.doSteps(wheelDiameter * 10 / 90 * angle);
-  /*
-  motorLeft.doDistanceInCm(2 * PI * distanceBetweenWheels / 360 * angle);
-  motorRight.doDistanceInCm(2 * PI * distanceBetweenWheels / 360 * angle);
-  */  
+  motorLeft.toggleDirection();  
+  motorLeft.doRotationInAngle(angle);
+  motorRight.doRotationInAngle(angle); 
 }
 
 
@@ -192,12 +186,8 @@ void TurnRight(int angle)
 {  
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
-  motorLeft.doSteps(wheelDiameter * 10 / 90 * angle);
-  motorRight.doSteps(wheelDiameter * 10 / 90 * angle);
-  /*
-  motorLeft.doDistanceInCm(2 * PI * distanceBetweenWheels / 360 * angle);
-  motorRight.doDistanceInCm(2 * PI * distanceBetweenWheels / 360 * angle);
-  */
+  motorLeft.doRotationInAngle(angle);
+  motorRight.doRotationInAngle(angle);
 }
 
 void ArcToLeft(int radius, int step_delay, boolean forward)
@@ -206,7 +196,10 @@ void ArcToLeft(int radius, int step_delay, boolean forward)
   motorRight.setTargetDelay(step_delay);
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
-  motorRight.toggleDirection();
+  if(forward) 
+    motorRight.toggleDirection();
+  else
+    motorLeft.toggleDirection();
   motorLeft.doDistanceInCm(radius / 4);
   motorRight.doDistanceInCm(radius / 2);
 }
@@ -218,7 +211,10 @@ void ArcToRight(int radius, int step_delay, boolean forward)
   motorRight.setTargetDelay(step_delay * 2);
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
-  motorRight.toggleDirection();
+  if(forward) 
+    motorRight.toggleDirection();
+  else
+    motorLeft.toggleDirection();
   motorLeft.doDistanceInCm(radius / 2);
   motorRight.doDistanceInCm(radius / 4);
 }

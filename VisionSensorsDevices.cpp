@@ -17,14 +17,7 @@ boolean blackLineDetected = false;
 const int delayActions = 4000;
     
 void sensors_and_devices::init()
-{
-  /*
-  attachInterrupt(BackSenzorPin, SenzorBack, CHANGE);
-  attachInterrupt(FrontSenzorPin, SenzorFront, CHANGE);
-  attachInterrupt(LeftSenzorPin, SenzorLeft, CHANGE);
-  attachInterrupt(RightSenzorPin, SenzorRight, CHANGE);
-  */
-  
+{ 
   pinMode(PrepareBallPin, OUTPUT);
   digitalWrite(PrepareBallPin, LOW);
   
