@@ -12,31 +12,43 @@
 #define STATE_WAIT_MOTORS_STOP -3
 #define BLACK 100
 
+#define FRONT 1
+#define BACK 2
+#define LEFT 3
+#define RIGHT 4
+
 elapsedMillis wait_time;
 int time_to_wait, state_to_set_after_wait;
 VisionStepper motorLeft;
 VisionStepper motorRight;
 sensors_and_devices SnD;
+boolean obstructionDetected = false;
+boolean motorsPaused = false;
+boolean ignoreSensors = false;
 
-int state;
+int state = 0;
 int shotBalls = 0;
+int directionMovement = 0;
 
 void setup()
 {
   SnD.init();
- // Serial.begin(9600);
+  //Serial.begin(9600);
   
   motorLeft.init();
   motorLeft.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
   motorLeft.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
-  motorLeft.initSizes(wheelDiameter, wheelRevolutionSteps);
+  motorLeft.initSizes(wheelDiameter, wheelRevolutionSteps, distanceBetweenWheels);
   
   motorRight.init();
   motorRight.initPins(enablePinRight, directionPinRight, stepPinRight);
   motorRight.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
-  motorRight.initSizes(wheelDiameter, wheelRevolutionSteps);
+  motorRight.initSizes(wheelDiameter, wheelRevolutionSteps, distanceBetweenWheels);
   
   //pinMode(buttonTestPin, INPUT_PULLUP);
+  obstructionDetected = false;
+  motorsPaused = false;
+  ignoreSensors = false;
   delay(1000);
   state = 0;
 }
@@ -46,7 +58,7 @@ void loop()
   switch (state)
   {
     case 0:     //move forward
-      MoveForward(60,slowSpeedDelay);
+      MoveForward(45,mediumSpeedDelay);
       waitForMotorsStop(state + 2);
       break;
    case 1:
@@ -56,60 +68,89 @@ void loop()
         motorLeft.pause();
         motorRight.pause();
         state++;
-      }*/
+      }  */
+      //SnD.startShooting();
+      //delay(1000);
+      //SnD.startSpinningBallTray();
+      //MoveForward(28,ultraSlowSpeedDelay);
+      //waitForMotorsStop(STATE_STOP);
       
       break;
    case 2:                    //wait to complete and rotate left
-      TurnLeft(85);
+      TurnLeft(90);
       waitForMotorsStop(state + 1);
       break;
     case 3:                    //wait to complete and move forward   
-      MoveForward(40,slowSpeedDelay);
+      MoveForward(35,mediumSpeedDelay);
       waitForMotorsStop(state + 1);
       break;
     case 4:                    //shoot balls 
+      SnD.startShooting();
+      delay(1000);
+      SnD.startSpinningBallTray();
+      MoveForward(83,ultraSlowSpeedDelay);
+      waitForMotorsStop(state + 1);
+        /*
         if(shotBalls < 6)
-        {  
+        {   
           if(shotBalls == 0){
             SnD.startShooting();
+            delay(500);
           }
+          
          else{
             SnD.stopShooting();
             delay(100);
             SnD.startShooting();
          }
+         
+         //SnD.startSpinningBallTray();
+         //delay(250);
+         SnD.shootBall();
          MoveForward(5,slowSpeedDelay);
          shotBalls++;
-         wait(1000, state);
+         waitForMotorsStop(state);
+         
+         //SnD.startSpinningBallTray();
         }
         else
         {     
           SnD.stopShooting();
+          SnD.stopSpinningBallTray();
           MoveForward(55,slowSpeedDelay);
           waitForMotorsStop(state + 1);
         }
+        */
       break;
     case 5:        //wait to complete and rotate left
-        TurnLeft(85);
+        SnD.stopShooting();
+        SnD.stopSpinningBallTray();
+        TurnLeft(90);
         waitForMotorsStop(state + 1);
       break;
     case 6:             //wait to complete and move forward
-        MoveForward(80, slowSpeedDelay);
+        MoveForward(40, mediumSpeedDelay);
         waitForMotorsStop(state + 1);
       break;
-    case 7:        //wait to complete and move backward
-        MoveBackward(60, slowSpeedDelay);
+    case 7:             //wait to complete and move forward
+        ignoreSensors = true;
+        MoveForward(20, slowSpeedDelay);
+        waitForMotorsStop(state + 1);
+    break;
+    case 8:        //wait to complete and move backward
+        ignoreSensors = false;
+        MoveBackward(55, mediumSpeedDelay);
         waitForMotorsStop(state + 1);
       break;
-    case 8:
-        TurnRight(85);
+    case 9:
+        TurnRight(90);
         waitForMotorsStop(state + 1);
       break;
-    case 9:   
-        MoveBackward(55,slowSpeedDelay);
+    case 10:   
+        MoveBackward(65,mediumSpeedDelay);
         waitForMotorsStop(state + 1);
       break;
-    case 10:
+    case 11:
         SnD.ThrowNet();
         state = STATE_STOP;
       break;
@@ -126,7 +167,45 @@ void loop()
       {
         state = state_to_set_after_wait;
       }
+      if(state_to_set_after_wait == 5)
+        SnD.shootBall();  
       break;
+  }
+  obstructionDetected = false;
+  if (SnD.detectFront() && directionMovement == FRONT)
+  {
+    Serial.println("Front detected!");
+    obstructionDetected = true;
+  }
+  if (SnD.detectBack() && directionMovement == BACK)
+  {
+    Serial.println("Back detected!");
+    obstructionDetected = true;
+  }
+  if (SnD.detectLeft() && directionMovement == LEFT)
+  {
+    Serial.println("Left detected!");
+    obstructionDetected = true;
+  }
+  if (SnD.detectRight() && directionMovement == RIGHT)
+  {
+    Serial.println("Right detected!");
+    obstructionDetected = true;
+  }
+  
+  if(obstructionDetected == true && ignoreSensors == false)
+  {
+    motorLeft.pause();
+    motorRight.pause();
+    motorsPaused = true;
+  }
+  else
+  {
+    if(motorsPaused == true){
+      motorLeft.unpause();
+      motorRight.unpause();
+      motorsPaused = false;
+    }
   }
   
   motorRight.doLoop();
@@ -149,7 +228,7 @@ void waitForMotorsStop(int state_after)
 
 void MoveForward(float distance, int step_delay)
 {       
-  float counter = 0;
+  directionMovement = FRONT;
   motorLeft.setTargetDelay(step_delay);         
   motorRight.setTargetDelay(step_delay);
   motorLeft.setDirectionForward();
@@ -160,8 +239,8 @@ void MoveForward(float distance, int step_delay)
 }
 
 void MoveBackward(float distance, int step_delay)
-{       
-  float counter = 0;
+{    
+  directionMovement = BACK;
   motorLeft.setTargetDelay(step_delay);         
   motorRight.setTargetDelay(step_delay);
   motorLeft.setDirectionForward();
@@ -172,7 +251,8 @@ void MoveBackward(float distance, int step_delay)
 }
 
 void TurnLeft(int angle)
-{      
+{       
+  directionMovement = LEFT;
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
   motorRight.toggleDirection();
@@ -184,6 +264,7 @@ void TurnLeft(int angle)
 
 void TurnRight(int angle)
 {  
+  directionMovement = RIGHT;
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
   motorLeft.doRotationInAngle(angle);
@@ -218,3 +299,4 @@ void ArcToRight(int radius, int step_delay, boolean forward)
   motorLeft.doDistanceInCm(radius / 2);
   motorRight.doDistanceInCm(radius / 4);
 }
+
