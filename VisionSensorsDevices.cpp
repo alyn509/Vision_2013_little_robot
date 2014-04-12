@@ -1,5 +1,4 @@
   #include "VisionSensorsDevices.h"
-#include "VisionSensor.h"
 #include "pins_little_robot.h"
 #include <elapsedMillis.h>
 
@@ -83,10 +82,5 @@ void sensors_and_devices::ThrowNet()
 int sensors_and_devices::detectColor()
 {
   return analogRead(ColourSensorPin5);
-}
-
-void sensors_and_devices::ColourSensor()
-{  
-  blackLineDetected = !blackLineDetected;
 }
 

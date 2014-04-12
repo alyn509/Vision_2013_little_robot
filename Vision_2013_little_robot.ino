@@ -37,12 +37,12 @@ void setup()
   
   motorLeft.init();
   motorLeft.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
-  motorLeft.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay); 
+  motorLeft.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorLeft.initSizes(wheelDiameter, wheelRevolutionSteps, distanceBetweenWheels);
   
   motorRight.init();
   motorRight.initPins(enablePinRight, directionPinRight, stepPinRight);
-  motorRight.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay); 
+  motorRight.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorRight.initSizes(wheelDiameter, wheelRevolutionSteps, distanceBetweenWheels);
   
   //pinMode(buttonTestPin, INPUT_PULLUP);
@@ -88,7 +88,6 @@ void loop()
       SnD.startShooting();
       delay(1000);
       SnD.startSpinningBallTray();
-      setStartDelays(ultraSlowStartSpeedDelay);
       MoveForward(83,ultraSlowSpeedDelay);
       waitForMotorsStop(state + 1);
         /*
@@ -124,7 +123,6 @@ void loop()
         */
       break;
     case 5:        //wait to complete and rotate left
-        setStartDelays(defaultStartSpeedDelay);
         SnD.stopShooting();
         SnD.stopSpinningBallTray();
         TurnLeft(90);
@@ -174,22 +172,22 @@ void loop()
       break;
   }
   obstructionDetected = false;
-  if (SnD.detectFront() && directionMovement == FRONT)
+  if (SnD.front.detect() && directionMovement == FRONT)
   {
     //Serial.println("Front detected!");
     obstructionDetected = true;
   }
-  if (SnD.detectBack() && directionMovement == BACK)
+  if (SnD.back.detect() && directionMovement == BACK)
   {
     //Serial.println("Back detected!");
     obstructionDetected = true;
   }
-  if (SnD.detectLeft() && directionMovement == LEFT)
+  if (SnD.left.detect() && directionMovement == LEFT)
   {
     //Serial.println("Left detected!");
     obstructionDetected = true;
   }
-  if (SnD.detectRight() && directionMovement == RIGHT)
+  if (SnD.right.detect() && directionMovement == RIGHT)
   {
     //Serial.println("Right detected!");
     obstructionDetected = true;
@@ -212,12 +210,6 @@ void loop()
   
   motorRight.doLoop();
   motorLeft.doLoop();
-}
-
-void setStartDelays(int startDelay)
-{
-  motorLeft.initDelays(startDelay, highPhaseDelay, maxSpeedDelay);
-  motorRight.initDelays(startDelay, highPhaseDelay, maxSpeedDelay); 
 }
 
 void wait(int time_in_ms, int state_after)
