@@ -37,12 +37,12 @@ void setup()
   
   motorLeft.init();
   motorLeft.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
-  motorLeft.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
+  motorLeft.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorLeft.initSizes(wheelDiameter, wheelRevolutionSteps, distanceBetweenWheels);
   
   motorRight.init();
   motorRight.initPins(enablePinRight, directionPinRight, stepPinRight);
-  motorRight.initDelays(startSpeedDelay, highPhaseDelay, maxSpeedDelay); 
+  motorRight.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorRight.initSizes(wheelDiameter, wheelRevolutionSteps, distanceBetweenWheels);
   
   //pinMode(buttonTestPin, INPUT_PULLUP);
