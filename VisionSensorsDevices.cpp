@@ -1,4 +1,5 @@
   #include "VisionSensorsDevices.h"
+#include "VisionSensor.h"
 #include "pins_little_robot.h"
 #include <elapsedMillis.h>
 
@@ -10,13 +11,7 @@
 elapsedMillis waitTime;
 
 //boolean FirstBallFlag = true;
- 
-boolean frontDetected = false;
-boolean leftDetected = false;
-boolean rightDetected = false;
-boolean backDetected = false;
-boolean blackLineDetected = false;
-    
+     
 const int delayActions = 4000;
 const int delayBallShotsTogglesHigh = 10;
 const int delayBallShotsTogglesLow = 40;
@@ -36,10 +31,10 @@ void sensors_and_devices::init()
   pinMode(ThrowNetPin, OUTPUT);
   digitalWrite(ThrowNetPin, LOW);
   
-  pinMode(FrontSenzorPin, INPUT);
-  pinMode(BackSenzorPin, INPUT);
-  pinMode(LeftSenzorPin, INPUT);
-  pinMode(RightSenzorPin, INPUT);
+  back.initPin(BackSenzorPin);
+  front.initPin(FrontSenzorPin);
+  left.initPin(LeftSenzorPin);
+  right.initPin(RightSenzorPin);
 }
 
 void sensors_and_devices::shootBall()
@@ -83,26 +78,6 @@ void sensors_and_devices::ThrowNet()
   digitalWrite(ThrowNetPin, HIGH);
   delay(delayActions);
   digitalWrite(ThrowNetPin, LOW);
-}
-
-boolean sensors_and_devices::detectFront()
-{
-  return digitalRead(FrontSenzorPin);
-}
-
-boolean sensors_and_devices::detectBack()
-{
-  return digitalRead(BackSenzorPin);
-}
-
-boolean sensors_and_devices::detectLeft()
-{
-  return digitalRead(LeftSenzorPin);
-}
-
-boolean sensors_and_devices::detectRight()
-{
-  return digitalRead(RightSenzorPin);
 }
 
 int sensors_and_devices::detectColor()
