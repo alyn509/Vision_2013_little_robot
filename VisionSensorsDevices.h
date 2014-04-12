@@ -8,10 +8,7 @@ class sensors_and_devices {
   public:    
     void init();
     static void ColourSensor();
-    boolean detectFront();
-    boolean detectBack();
-    boolean detectLeft();
-    boolean detectRight();
+    VisionSensor back, left, right, front;
     int detectColor();
     void ThrowNet();
     void shootBall();

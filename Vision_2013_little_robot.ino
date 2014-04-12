@@ -176,22 +176,22 @@ void loop()
   obstructionDetected = false;
   if (SnD.detectFront() && directionMovement == FRONT)
   {
-    Serial.println("Front detected!");
+    //Serial.println("Front detected!");
     obstructionDetected = true;
   }
   if (SnD.detectBack() && directionMovement == BACK)
   {
-    Serial.println("Back detected!");
+    //Serial.println("Back detected!");
     obstructionDetected = true;
   }
   if (SnD.detectLeft() && directionMovement == LEFT)
   {
-    Serial.println("Left detected!");
+    //Serial.println("Left detected!");
     obstructionDetected = true;
   }
   if (SnD.detectRight() && directionMovement == RIGHT)
   {
-    Serial.println("Right detected!");
+    //Serial.println("Right detected!");
     obstructionDetected = true;
   }
   
