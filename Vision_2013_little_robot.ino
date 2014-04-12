@@ -88,6 +88,7 @@ void loop()
       SnD.startShooting();
       delay(1000);
       SnD.startSpinningBallTray();
+      setStartDelays(ultraSlowStartSpeedDelay);
       MoveForward(83,ultraSlowSpeedDelay);
       waitForMotorsStop(state + 1);
         /*
@@ -123,6 +124,7 @@ void loop()
         */
       break;
     case 5:        //wait to complete and rotate left
+        setStartDelays(defaultStartSpeedDelay);
         SnD.stopShooting();
         SnD.stopSpinningBallTray();
         TurnLeft(90);
@@ -210,6 +212,12 @@ void loop()
   
   motorRight.doLoop();
   motorLeft.doLoop();
+}
+
+void setStartDelays(int startDelay)
+{
+  motorLeft.initDelays(startDelay, highPhaseDelay, maxSpeedDelay);
+  motorRight.initDelays(startDelay, highPhaseDelay, maxSpeedDelay); 
 }
 
 void wait(int time_in_ms, int state_after)
