@@ -1,4 +1,5 @@
-const int startSpeedDelay = 22000; // default 8000;
+const int defaultStartSpeedDelay = 8000;
+const int ultraSlowStartSpeedDelay = 22000;
 const int highPhaseDelay = 100;
 const int maxSpeedDelay = 400;
 
