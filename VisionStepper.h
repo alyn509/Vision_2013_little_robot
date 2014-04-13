@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include <elapsedMillis.h>
+#include "little_robot_constants.h"
 
 class VisionStepper {
   public:
@@ -24,11 +25,14 @@ class VisionStepper {
     void setMaxSpeed();
     void pause();
     void unpause();
+    void setSpecial();
+    void resetSpecial();
   private:
     void doSetup();
   private:
     int enablePin, directionPin, stepPin;
     int enablePinState, directionPinState, stepPinState;
+    boolean special;
     int globalState;
     unsigned long stepsMadeSoFar, stepsRemaining;
     float maxSpeedDelay, startSpeedDelay, currentDelay, targetDelay, highPhaseDelay;

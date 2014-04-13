@@ -76,7 +76,7 @@ void sensors_and_devices::ThrowNet()
 {
   digitalWrite(ThrowNetPin, HIGH);
   delay(delayActions);
-  digitalWrite(ThrowNetPin, LOW);
+  //digitalWrite(ThrowNetPin, LOW);
 }
 
 int sensors_and_devices::detectColor()

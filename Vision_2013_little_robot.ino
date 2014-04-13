@@ -69,27 +69,27 @@ void loop()
         motorRight.pause();
         state++;
       }  */
-      //SnD.startShooting();
+      SnD.ThrowNet();
       //delay(1000);
       //SnD.startSpinningBallTray();
       //MoveForward(28,ultraSlowSpeedDelay);
       //waitForMotorsStop(STATE_STOP);
-      
+      state = STATE_STOP;
       break;
    case 2:                    //wait to complete and rotate left
       TurnLeft(90);
       waitForMotorsStop(state + 1);
       break;
     case 3:                    //wait to complete and move forward   
-      MoveForward(35,mediumSpeedDelay);
+      MoveForward(40,mediumSpeedDelay);
       waitForMotorsStop(state + 1);
       break;
     case 4:                    //shoot balls 
-      SnD.startShooting();
+      SnD.startShooting();  
       delay(1000);
       SnD.startSpinningBallTray();
       setStartDelays(ultraSlowStartSpeedDelay);
-      MoveForward(83,ultraSlowSpeedDelay);
+      MoveForward(78,ultraSlowSpeedDelay);
       waitForMotorsStop(state + 1);
         /*
         if(shotBalls < 6)
@@ -131,16 +131,20 @@ void loop()
         waitForMotorsStop(state + 1);
       break;
     case 6:             //wait to complete and move forward
-        MoveForward(40, mediumSpeedDelay);
+        MoveForward(35, mediumSpeedDelay);
         waitForMotorsStop(state + 1);
       break;
     case 7:             //wait to complete and move forward
         ignoreSensors = true;
+        motorLeft.setSpecial();
+        motorRight.setSpecial();
         MoveForward(20, slowSpeedDelay);
         waitForMotorsStop(state + 1);
     break;
     case 8:        //wait to complete and move backward
         ignoreSensors = false;
+        motorLeft.resetSpecial();
+        motorRight.resetSpecial();
         MoveBackward(55, mediumSpeedDelay);
         waitForMotorsStop(state + 1);
       break;
@@ -149,10 +153,11 @@ void loop()
         waitForMotorsStop(state + 1);
       break;
     case 10:   
-        MoveBackward(65,mediumSpeedDelay);
+        MoveBackward(28,mediumSpeedDelay);
         waitForMotorsStop(state + 1);
       break;
     case 11:
+        delay(5000);
         SnD.ThrowNet();
         state = STATE_STOP;
       break;
@@ -169,8 +174,8 @@ void loop()
       {
         state = state_to_set_after_wait;
       }
-      if(state_to_set_after_wait == 5)
-        SnD.shootBall();  
+      //if(state_to_set_after_wait == 5)
+        //SnD.shootBall(); 
       break;
   }
   obstructionDetected = false;

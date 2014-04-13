@@ -12,6 +12,16 @@ void VisionStepper::init()
   stepsMadeSoFar = 0;
   stepsRemaining = 0;
   globalState = STOPPED;
+  special = false;
+}
+
+void VisionStepper::setSpecial()
+{
+  special = true;
+}
+void VisionStepper::resetSpecial()
+{
+  special = false;
 }
 
 void VisionStepper::initPins(int enablePin, int directionPin, int stepPin)
@@ -67,7 +77,10 @@ void VisionStepper::doLoop()
       break;
     case STOPPING_ENABLE_ON:
       if (stopTimer > 100)
-        globalState = STOPPING;
+        if (special)
+          globalState = STOPPED;
+        else
+          globalState = STOPPING;
       break;
     case RUNNING:
       if (((stepPinState == LOW) && (stepTimer > currentDelay)) ||
