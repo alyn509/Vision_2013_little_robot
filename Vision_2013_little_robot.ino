@@ -272,7 +272,6 @@ void TurnLeft(int angle)
   motorRight.doRotationInAngle(angle); 
 }
 
-
 void TurnRight(int angle)
 {  
   directionMovement = RIGHT;
@@ -295,7 +294,6 @@ void ArcToLeft(int radius, int step_delay, boolean forward)
   motorLeft.doDistanceInCm(radius / 4);
   motorRight.doDistanceInCm(radius / 2);
 }
-
 
 void ArcToRight(int radius, int step_delay, boolean forward)
 {
