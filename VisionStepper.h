@@ -3,7 +3,6 @@
 
 #include "Arduino.h"
 #include <elapsedMillis.h>
-#include "little_robot_constants.h"
 
 class VisionStepper {
   public:
