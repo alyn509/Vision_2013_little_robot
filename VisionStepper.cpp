@@ -13,6 +13,7 @@ void VisionStepper::init()
   stepsRemaining = 0;
   globalState = STOPPED;
   special = false;
+  forwardDirection = HIGH;
 }
 
 void VisionStepper::setSpecial()
@@ -24,6 +25,11 @@ void VisionStepper::resetSpecial()
   special = false;
 }
 
+void VisionStepper::initDirectionForward(boolean forward)
+{
+  forwardDirection = forward;
+}
+
 void VisionStepper::initPins(int enablePin, int directionPin, int stepPin)
 {
   this->enablePin = enablePin;
@@ -31,8 +37,8 @@ void VisionStepper::initPins(int enablePin, int directionPin, int stepPin)
   this->stepPin = stepPin;
   
   pinMode(directionPin, OUTPUT);
-  directionPinState = HIGH;
-  digitalWrite(directionPin, HIGH);
+  directionPinState = forwardDirection;
+  digitalWrite(directionPin, directionPinState);
   
   pinMode(enablePin, OUTPUT);
   enablePinState = LOW;
@@ -176,7 +182,13 @@ boolean VisionStepper::isOff()
 
 void VisionStepper::setDirectionForward()
 {
-  directionPinState = HIGH;
+  directionPinState = forwardDirection;
+  digitalWrite(directionPin, directionPinState);
+}
+
+void VisionStepper::setDirectionBackward()
+{
+  directionPinState = !forwardDirection;
   digitalWrite(directionPin, directionPinState);
 }
 
@@ -185,7 +197,6 @@ void VisionStepper::toggleDirection()
   directionPinState = !directionPinState;
   digitalWrite(directionPin, directionPinState);
 }
-
 
 boolean VisionStepper::isAtTargetSpeed()
 {
@@ -198,7 +209,6 @@ void VisionStepper::doSteps(int stepNumber)
   stepsRemaining = stepNumber * 2; //leave as-is!
   globalState = STARTING;
 }
-
 
 void VisionStepper::doDistanceInCm(float distance)
 {

@@ -36,11 +36,13 @@ void setup()
   //Serial.begin(9600);
   
   motorLeft.init();
+  motorLeft.initDirectionForward(HIGH);
   motorLeft.initPins(enablePinLeft, directionPinLeft, stepPinLeft);
   motorLeft.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorLeft.initSizes(wheelDiameter, wheelRevolutionSteps, distanceBetweenWheels);
   
   motorRight.init();
+  motorRight.initDirectionForward(LOW);
   motorRight.initPins(enablePinRight, directionPinRight, stepPinRight);
   motorRight.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   motorRight.initSizes(wheelDiameter, wheelRevolutionSteps, distanceBetweenWheels);
@@ -246,7 +248,6 @@ void MoveForward(float distance, int step_delay)
   motorRight.setTargetDelay(step_delay);
   motorLeft.setDirectionForward();
   motorRight.setDirectionForward();
-  motorRight.toggleDirection(); 
   motorLeft.doDistanceInCm(distance);
   motorRight.doDistanceInCm(distance);
 }
@@ -256,9 +257,8 @@ void MoveBackward(float distance, int step_delay)
   directionMovement = BACK;
   motorLeft.setTargetDelay(step_delay);         
   motorRight.setTargetDelay(step_delay);
-  motorLeft.setDirectionForward();
-  motorRight.setDirectionForward();
-  motorLeft.toggleDirection();    
+  motorLeft.setDirectionBackward();
+  motorRight.setDirectionBackward();
   motorLeft.doDistanceInCm(distance);
   motorRight.doDistanceInCm(distance);
 }
@@ -266,10 +266,8 @@ void MoveBackward(float distance, int step_delay)
 void TurnLeft(int angle)
 {       
   directionMovement = LEFT;
-  motorLeft.setDirectionForward();
+  motorLeft.setDirectionBackward();
   motorRight.setDirectionForward();
-  motorRight.toggleDirection();
-  motorLeft.toggleDirection();  
   motorLeft.doRotationInAngle(angle);
   motorRight.doRotationInAngle(angle); 
 }
@@ -279,7 +277,7 @@ void TurnRight(int angle)
 {  
   directionMovement = RIGHT;
   motorLeft.setDirectionForward();
-  motorRight.setDirectionForward();
+  motorRight.setDirectionBackward();
   motorLeft.doRotationInAngle(angle);
   motorRight.doRotationInAngle(angle);
 }
