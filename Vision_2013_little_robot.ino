@@ -17,6 +17,10 @@
 #define LEFT 3
 #define RIGHT 4
 
+#define CLASSIC_TACTIC 0
+#define FRIENDLY_TACTIC 20
+#define AGGRESSIVE_TACTIC 40
+
 elapsedMillis wait_time;
 int time_to_wait, state_to_set_after_wait;
 VisionStepper motorLeft;
@@ -59,7 +63,9 @@ void loop()
 {  
   switch (state)
   {
-    case 0:     //move forward
+    
+      //******************************************CLASSIC TACTIC**************************************************//
+    case CLASSIC_TACTIC:     //move forward
       MoveForward(45,mediumSpeedDelay);
       waitForMotorsStop(state + 2);
       break;
@@ -70,13 +76,14 @@ void loop()
         motorLeft.pause();
         motorRight.pause();
         state++;
-      }  */
-      SnD.ThrowNet();
+      }  */              //wait to complete and rotate left
+      TurnLeft(180);
+      waitForMotorsStop(state - 1);
       //delay(1000);
       //SnD.startSpinningBallTray();
       //MoveForward(28,ultraSlowSpeedDelay);
       //waitForMotorsStop(STATE_STOP);
-      state = STATE_STOP;
+      //state = STATE_STOP;
       break;
    case 2:                    //wait to complete and rotate left
       TurnLeft(90);
@@ -163,6 +170,81 @@ void loop()
         SnD.ThrowNet();
         state = STATE_STOP;
       break;
+      
+      //******************************************AGGRESSIVE TACTIC**************************************************//
+    case AGGRESSIVE_TACTIC:
+      MoveForward(45,mediumSpeedDelay);
+      waitForMotorsStop(state + 1);
+      break;
+    case 21:                    //wait to complete and rotate left
+      TurnLeft(90);
+      waitForMotorsStop(state + 1);
+      break;
+    case 22:                    //wait to complete and move fast to the enemy's mammoth
+      setStartDelays(highPhaseDelay); 
+      MoveForward(150,highPhaseDelay);
+      waitForMotorsStop(state + 1);
+      break;
+    case 23:                    //shoot half of the balls 
+      SnD.startShooting();  
+      delay(1000);
+      SnD.startSpinningBallTray();
+      setStartDelays(ultraSlowStartSpeedDelay);
+      MoveBackward(40,ultraSlowSpeedDelay);
+      waitForMotorsStop(state + 1);
+      break;
+    case 24:        //wait to complete and rotate left
+      setStartDelays(defaultStartSpeedDelay);
+      SnD.stopShooting();
+      SnD.stopSpinningBallTray();
+      waitForMotorsStop(state + 1);
+      break;
+    case 25:             //wait to complete and move backward
+      MoveBackward(35, mediumSpeedDelay);
+      waitForMotorsStop(state + 1);
+      break;
+    case 26:
+      TurnRight(90);
+      waitForMotorsStop(state + 1);
+      break;
+    case 27:             //wait to complete and move forward
+      ignoreSensors = true;
+      motorLeft.setSpecial();
+      motorRight.setSpecial();
+      MoveForward(20, slowSpeedDelay);
+      waitForMotorsStop(state + 1);
+    break;
+    case 28:        //wait to complete and move backward
+      ignoreSensors = false;
+      motorLeft.resetSpecial();
+      motorRight.resetSpecial();
+      MoveBackward(55, mediumSpeedDelay);
+      waitForMotorsStop(state + 1);
+      break;
+    case 29:
+      TurnRight(90);
+      waitForMotorsStop(state + 1);
+      break;
+    case 30:             //wait to complete and move forward
+      MoveForward(65, mediumSpeedDelay);
+      waitForMotorsStop(state + 1);
+      break;
+    case 31:                    //shoot the other half of the balls 
+      SnD.startShooting();  
+      delay(1000);
+      SnD.startSpinningBallTray();
+      setStartDelays(ultraSlowStartSpeedDelay);
+      MoveForward(40,ultraSlowSpeedDelay);
+      waitForMotorsStop(state + 1);
+      break;
+    case 32:        //wait to complete and throw net
+      setStartDelays(defaultStartSpeedDelay);
+      SnD.stopShooting();
+      SnD.stopSpinningBallTray();
+      SnD.ThrowNet();
+      state = STATE_STOP;
+      break;
+      
     case STATE_STOP:   //stop
       break;
     case STATE_WAIT:
@@ -182,6 +264,11 @@ void loop()
   }
   obstructionDetected = false;
   if (SnD.front.detect() && directionMovement == FRONT)
+  {
+    //Serial.println("Front detected!");
+    obstructionDetected = true;
+  }
+  if (SnD.front2.detect() && directionMovement == FRONT)
   {
     //Serial.println("Front detected!");
     obstructionDetected = true;

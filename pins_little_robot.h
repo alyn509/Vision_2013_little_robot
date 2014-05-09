@@ -7,6 +7,7 @@ const int ThrowNetPin = 15;
 const int ShootBallPin = 16;
 const int PrepareBallPin = 17;
 const int FrontSenzorPin = 18;
+const int FrontSensorPin2 = 7;
 const int BackSenzorPin = 19;
 const int LeftSenzorPin = 20;
 const int RightSenzorPin = 21;
@@ -23,4 +24,6 @@ const int directionPinRight = 13;
 
 const int colorRedPin = 31;
 const int colorYellowPin = 33;
+
+
 

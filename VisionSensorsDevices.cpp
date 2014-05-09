@@ -32,6 +32,7 @@ void sensors_and_devices::init()
   
   back.initPin(BackSenzorPin);
   front.initPin(FrontSenzorPin);
+  front2.initPin(FrontSensorPin2);
   left.initPin(LeftSenzorPin);
   right.initPin(RightSenzorPin);
 }
