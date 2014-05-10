@@ -37,9 +37,9 @@ class VisionStepper {
     boolean special;
     int globalState;
     unsigned long stepsMadeSoFar, stepsRemaining, stepSpeedCounter;
-    float maxSpeedDelay, startSpeedDelay, currentDelay, targetDelay, highPhaseDelay;
+    float maxSpeedDelay, startSpeedDelay, currentDelay, targetDelay, highPhaseDelay, pauseDelay;
     int old_state;
-    boolean foundTargetSpeed, raiseSpeed;
+    boolean foundTargetSpeed, raiseSpeed, pauseWhenFound;
     elapsedMicros stepTimer;
     elapsedMillis stopTimer;
     

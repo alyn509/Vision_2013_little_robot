@@ -14,6 +14,7 @@ void VisionStepper::init()
   stepsRemaining = 0;
   globalState = STOPPED;
   special = false;
+  pauseWhenFound = false;
   forwardDirection = HIGH;
 }
 
@@ -82,8 +83,8 @@ void VisionStepper::doLoop()
       globalState = STOPPED;
       break;
     case WAIT_FOR_STOPPING:
-      if (stopTimer > 100)
-        globalState = STOPPING;
+      if (stopTimer > 200)
+        globalState = STOPPING_ENABLE_ON;
       break;
     case STOPPING_ENABLE_ON:
       if (special)
@@ -92,7 +93,7 @@ void VisionStepper::doLoop()
         resetSpecial();
       }
       else
-        globalState = WAIT_FOR_STOPPING;
+        globalState = STOPPING;
       break;
     case RUNNING:
       if (((stepPinState == LOW) && (stepTimer > currentDelay)) ||
@@ -115,9 +116,13 @@ void VisionStepper::doLoop()
         }
         currentDelay = startSpeedDelay * 10 / sqrt(1000 * stepSpeedCounter + 100);
         if (!foundTargetSpeed)
+        {
           if ((!raiseSpeed && currentDelay > targetDelay) ||
               (raiseSpeed && currentDelay < targetDelay))
               foundTargetSpeed = true;
+          else if (targetDelay == currentDelay)
+              foundTargetSpeed = true;
+        }
         stepsMadeSoFar++;
         stepsRemaining--;
         if (stepsRemaining <= stepSpeedCounter)
@@ -126,8 +131,13 @@ void VisionStepper::doLoop()
         digitalWrite(stepPin, stepPinState);
         if (stepsRemaining == 0)
         {
-          globalState = STOPPING_ENABLE_ON;
+          globalState = WAIT_FOR_STOPPING;
           stopTimer = 0;
+          break;
+        }
+        if (pauseWhenFound && foundTargetSpeed)
+        {
+          globalState = PAUSE;
           break;
         }
         //Serial.println(currentStepDelay);
@@ -149,15 +159,21 @@ void VisionStepper::doLoop()
 
 void VisionStepper::pause()
 {
-  if (globalState == PAUSE)
-    return;
-  old_state = globalState;
-  globalState = PAUSE;
+  targetDelay = 10000;
+  foundTargetSpeed = false;
+  pauseWhenFound = true;
 }
 
 void VisionStepper::unpause()
 {
-  globalState = old_state;
+  targetDelay = pauseDelay;
+  foundTargetSpeed = false;
+  pauseWhenFound = false;
+  if (globalState == PAUSE)
+  {
+    stepSpeedCounter = 0;
+    globalState = RUNNING;
+  }
 }
 
 void VisionStepper::stopNow()
@@ -175,6 +191,7 @@ void VisionStepper::setTargetDelay(unsigned long targetDelay)
   if (this->targetDelay == targetDelay)
     return;
   this->targetDelay = targetDelay;
+  pauseDelay = targetDelay;
   foundTargetSpeed = false;
 }
 

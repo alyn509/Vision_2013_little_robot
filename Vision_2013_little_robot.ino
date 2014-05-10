@@ -67,12 +67,12 @@ void loop()
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
       setSpecial();
-      MoveBackward(100,fastSpeedDelay);
+      MoveForward(100,fastSpeedDelay);
       waitForMotorsStop(999);
       break;
    case 999:
       setSpecial();
-      MoveForward(100,fastSpeedDelay);
+      MoveBackward(100,fastSpeedDelay);
       waitForMotorsStop(0);
       break;
    case 1:
