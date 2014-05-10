@@ -66,8 +66,14 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      MoveForward(45,mediumSpeedDelay);
-      waitForMotorsStop(state + 2);
+      setSpecial();
+      MoveBackward(100,fastSpeedDelay);
+      waitForMotorsStop(999);
+      break;
+   case 999:
+      setSpecial();
+      MoveForward(100,fastSpeedDelay);
+      waitForMotorsStop(0);
       break;
    case 1:
       //Serial.println(SnD.detectColor());
@@ -306,6 +312,12 @@ void loop()
   
   motorRight.doLoop();
   motorLeft.doLoop();
+}
+
+void setSpecial()
+{
+  motorLeft.setSpecial();
+  motorRight.setSpecial();
 }
 
 void setStartDelays(int startDelay)

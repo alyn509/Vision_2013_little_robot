@@ -2,10 +2,11 @@
 
 #define STOPPED 0
 #define STOPPING 1
-#define STOPPING_ENABLE_ON 2
-#define RUNNING 3
-#define PAUSE 4
-#define STARTING 5
+#define WAIT_FOR_STOPPING 2
+#define STOPPING_ENABLE_ON 3
+#define RUNNING 4
+#define PAUSE 5
+#define STARTING 6
 
 void VisionStepper::init()
 {
@@ -49,7 +50,7 @@ void VisionStepper::initPins(int enablePin, int directionPin, int stepPin)
   digitalWrite(stepPin, stepPinState);
 }
 
-void VisionStepper::initDelays(int startSpeedDelay, int highPhaseDelay, int maxSpeedDelay)
+void VisionStepper::initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long maxSpeedDelay)
 {
   this->maxSpeedDelay = maxSpeedDelay;
   this->startSpeedDelay = startSpeedDelay;
@@ -77,16 +78,21 @@ void VisionStepper::doLoop()
       break;
     case STOPPING:
       enablePinState = LOW;
-      delay(250);
       digitalWrite(enablePin, enablePinState);
       globalState = STOPPED;
       break;
-    case STOPPING_ENABLE_ON:
+    case WAIT_FOR_STOPPING:
       if (stopTimer > 100)
-        if (special)
-          globalState = STOPPED;
-        else
-          globalState = STOPPING;
+        globalState = STOPPING;
+      break;
+    case STOPPING_ENABLE_ON:
+      if (special)
+      {
+        globalState = STOPPED;
+        resetSpecial();
+      }
+      else
+        globalState = WAIT_FOR_STOPPING;
       break;
     case RUNNING:
       if (((stepPinState == LOW) && (stepTimer > currentDelay)) ||
@@ -107,7 +113,7 @@ void VisionStepper::doLoop()
             raiseSpeed = false;
           }
         }
-        currentDelay = startSpeedDelay * 10 / sqrt(0.1 * stepSpeedCounter + 100);
+        currentDelay = startSpeedDelay * 10 / sqrt(1000 * stepSpeedCounter + 100);
         if (!foundTargetSpeed)
           if ((!raiseSpeed && currentDelay > targetDelay) ||
               (raiseSpeed && currentDelay < targetDelay))
@@ -164,7 +170,7 @@ void VisionStepper::setMaxSpeed()
   setTargetDelay(maxSpeedDelay);
 }
 
-void VisionStepper::setTargetDelay(int targetDelay)
+void VisionStepper::setTargetDelay(unsigned long targetDelay)
 {
   if (this->targetDelay == targetDelay)
     return;
@@ -200,7 +206,7 @@ boolean VisionStepper::isAtTargetSpeed()
   return foundTargetSpeed;
 }
 
-void VisionStepper::doSteps(int stepNumber)
+void VisionStepper::doSteps(unsigned long stepNumber)
 {
   stepsMadeSoFar = 0;
   stepsRemaining = stepNumber * 2; //leave as-is!
