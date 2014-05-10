@@ -9,11 +9,16 @@ class sensors_and_devices {
   public:    
     void init();
     VisionSensor back, left, right, front, front2;
+    int shootingState;
+    boolean pausedShooting;
     void ThrowNet();
     void shootBall();
     void startShooting();
     void startSpinningBallTray();
     void stopSpinningBallTray();
+    boolean isSpinningBallTray();
+    void pauseShooting();
+    void resumeShooting();
     void stopShooting();
 };
 

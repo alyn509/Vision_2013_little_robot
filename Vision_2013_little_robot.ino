@@ -7,6 +7,7 @@
 #include "pins_little_robot.h"
 #include "little_robot_constants.h"
 
+#define STATE_NET -4
 #define STATE_STOP -1
 #define STATE_WAIT -2
 #define STATE_WAIT_MOTORS_STOP -3
@@ -21,7 +22,7 @@
 #define FRIENDLY_TACTIC 20
 #define AGGRESSIVE_TACTIC 40
 
-elapsedMillis wait_time, waitSlow;
+elapsedMillis wait_time, waitSlow, ninetySecondsTimer;
 int time_to_wait, state_to_set_after_wait;
 VisionStepper motorLeft;
 VisionStepper motorRight;
@@ -29,6 +30,7 @@ sensors_and_devices SnD;
 boolean obstructionDetected = false;
 boolean motorsPaused = false;
 boolean ignoreSensors = false;
+boolean stoppedEverything = false;
 
 int state = 0;
 int shotBalls = 0;
@@ -37,6 +39,8 @@ boolean blackLineDetectedAny, blackLineDetectedAll, blackLineLeft, blackLineRigh
 
 void setup()
 {
+  ninetySecondsTimer = 0;
+  
   SnD.init();
   //Serial.begin(9600);
   
@@ -75,8 +79,13 @@ void loop()
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
       //setSpecial();
-      MoveForward(45,mediumSpeedDelay);
-      waitForMotorsStop(state + 2);
+      motorLeft.setTargetDelay(fastSpeedDelay);         
+      motorRight.setTargetDelay(fastSpeedDelay*5);
+      motorLeft.setDirectionForward();
+      motorRight.setDirectionForward();
+      motorLeft.doDistanceInCm(999999);
+      motorRight.doDistanceInCm(999999);
+      waitForMotorsStop(state);
       break;
    case 1:
       //Serial.println(SnD.detectColor());
@@ -259,6 +268,10 @@ void loop()
       state = STATE_STOP;
       break;
       
+    case STATE_NET:
+      SnD.ThrowNet();
+      state = STATE_STOP;
+      break;
     case STATE_STOP:   //stop
       break;
     case STATE_WAIT:
@@ -332,6 +345,15 @@ void loop()
   */
   motorRight.doLoop();
   motorLeft.doLoop();
+  
+  if (ninetySecondsTimer > 10000L && !stoppedEverything)//90 sec
+  {
+    motorLeft.stopNow();
+    motorRight.stopNow();
+    SnD.stopShooting();
+    state = STATE_NET;
+    stoppedEverything = true;
+  }
 }
 
 void setSpecial()

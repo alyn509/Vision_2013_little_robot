@@ -25,7 +25,8 @@ void sensors_and_devices::init()
   digitalWrite(PrepareBallPin, LOW);
   
   pinMode(ShootBallPin, OUTPUT);
-  digitalWrite(ShootBallPin, LOW);
+  shootingState = LOW;
+  digitalWrite(ShootBallPin, shootingState);
   
   pinMode(ThrowNetPin, OUTPUT);
   digitalWrite(ThrowNetPin, LOW);
@@ -64,19 +65,44 @@ void sensors_and_devices::stopShooting()
 
 void sensors_and_devices::startSpinningBallTray()
 {
-  digitalWrite(PrepareBallPin, HIGH);
+  shootingState = HIGH;
+  digitalWrite(PrepareBallPin, shootingState);
   waitTime = 0;
 }
 
 void sensors_and_devices::stopSpinningBallTray()
 {
-  digitalWrite(PrepareBallPin, LOW);
+  shootingState = LOW;
+  digitalWrite(PrepareBallPin, shootingState);
+}
+
+boolean sensors_and_devices::isSpinningBallTray()
+{
+  return shootingState;
+}
+
+void sensors_and_devices::pauseShooting()
+{
+  if (isSpinningBallTray())
+  {
+    pausedShooting = true;
+    stopSpinningBallTray();
+  }
+}
+
+void sensors_and_devices::resumeShooting()
+{
+  if (pausedShooting)
+  {
+    pausedShooting = false;
+    startSpinningBallTray();
+  }
 }
 
 void sensors_and_devices::ThrowNet()
 {
   digitalWrite(ThrowNetPin, HIGH);
   delay(delayActions);
-  //digitalWrite(ThrowNetPin, LOW);
+  digitalWrite(ThrowNetPin, LOW);
 }
 
