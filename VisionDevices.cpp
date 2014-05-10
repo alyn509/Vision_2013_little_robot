@@ -1,11 +1,6 @@
-  #include "VisionSensorsDevices.h"
+  #include "VisionDevices.h"
 #include "pins_little_robot.h"
 #include <elapsedMillis.h>
-
-#define STOPPED 0
-#define STOPPING 1
-#define RUNNING 2
-#define STARTING 3
 
 elapsedMillis waitTime;
 
@@ -17,7 +12,7 @@ const int delayBallShotsTogglesLow = 40;
 //const int ballToggleTimes = 9999999;
 //int toggleCounter;
     
-void sensors_and_devices::init()
+void VisionDevices::init()
 { 
   //FirstBallFlag = true;
   //toggleCounter = 0;
@@ -29,15 +24,9 @@ void sensors_and_devices::init()
   
   pinMode(ThrowNetPin, OUTPUT);
   digitalWrite(ThrowNetPin, LOW);
-  
-  back.initPin(BackSenzorPin);
-  front.initPin(FrontSenzorPin);
-  front2.initPin(FrontSensorPin2);
-  left.initPin(LeftSenzorPin);
-  right.initPin(RightSenzorPin);
 }
 
-void sensors_and_devices::shootBall()
+void VisionDevices::shootBall()
 {
   //if(toggleCounter<=ballToggleTimes){
     if(waitTime>delayBallShotsTogglesHigh){
@@ -52,35 +41,35 @@ void sensors_and_devices::shootBall()
   //}
 }
 
-void sensors_and_devices::startShooting()
+void VisionDevices::startShooting()
 {
   digitalWrite(ShootBallPin, HIGH);
 }
 
-void sensors_and_devices::stopShooting()
+void VisionDevices::stopShooting()
 {
    digitalWrite(ShootBallPin, LOW);
 }
 
-void sensors_and_devices::startSpinningBallTray()
+void VisionDevices::startSpinningBallTray()
 {
   digitalWrite(PrepareBallPin, HIGH);
   waitTime = 0;
 }
 
-void sensors_and_devices::stopSpinningBallTray()
+void VisionDevices::stopSpinningBallTray()
 {
   digitalWrite(PrepareBallPin, LOW);
 }
 
-void sensors_and_devices::ThrowNet()
+void VisionDevices::ThrowNet()
 {
   digitalWrite(ThrowNetPin, HIGH);
   delay(delayActions);
   //digitalWrite(ThrowNetPin, LOW);
 }
 
-int sensors_and_devices::detectColor()
+int VisionDevices::detectColor()
 {
   return analogRead(ColourSensorPin5);
 }

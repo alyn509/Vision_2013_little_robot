@@ -5,10 +5,9 @@
 #include "VisionSensor.h"
 #include <elapsedMillis.h>
 
-class sensors_and_devices {
+class VisionDevices {
   public:    
     void init();
-    VisionSensor back, left, right, front, front2;
     int detectColor();
     void ThrowNet();
     void shootBall();
