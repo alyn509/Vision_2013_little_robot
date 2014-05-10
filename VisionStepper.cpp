@@ -114,7 +114,7 @@ void VisionStepper::doLoop()
             raiseSpeed = false;
           }
         }
-        currentDelay = startSpeedDelay * 10 / sqrt(1000 * stepSpeedCounter + 100);
+        currentDelay = startSpeedDelay * 10 / sqrt(2000 * stepSpeedCounter + 100);
         if (!foundTargetSpeed)
         {
           if ((!raiseSpeed && currentDelay > targetDelay) ||
