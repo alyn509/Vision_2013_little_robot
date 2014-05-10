@@ -172,7 +172,10 @@ void VisionStepper::doLoop()
 
 void VisionStepper::pause()
 {
-  targetDelay = 10000;
+  if (pauseDelay > 10000)
+    targetDelay = 40000;
+  else
+    targetDelay = 10000;
   foundTargetSpeed = false;
   pauseWhenFound = true;
 }
