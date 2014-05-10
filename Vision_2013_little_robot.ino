@@ -175,7 +175,9 @@ void loop()
       devices.ThrowNet();
       state = STATE_STOP;
       break;
-  }  
+    default:
+      state.doLoop();
+  }
   base.doLoop();
 }
 
