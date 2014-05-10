@@ -72,7 +72,17 @@ void loop()
       break;
    case 999:
       setSpecial();
-      MoveBackward(100,fastSpeedDelay);
+      TurnLeft(180);
+      waitForMotorsStop(998);
+      break;
+   case 998:
+      setSpecial();
+      MoveForward(100,fastSpeedDelay);
+      waitForMotorsStop(997);
+      break;
+   case 997:
+      setSpecial();
+      TurnRight(180);
       waitForMotorsStop(0);
       break;
    case 1:
@@ -284,12 +294,12 @@ void loop()
     //Serial.println("Back detected!");
     obstructionDetected = true;
   }
-  if (SnD.left.detect() && directionMovement == LEFT)
+  if (SnD.left.detect() && (directionMovement == LEFT || directionMovement == RIGHT))
   {
     //Serial.println("Left detected!");
     obstructionDetected = true;
   }
-  if (SnD.right.detect() && directionMovement == RIGHT)
+  if (SnD.right.detect() && (directionMovement == LEFT || directionMovement == RIGHT))
   {
     //Serial.println("Right detected!");
     obstructionDetected = true;
@@ -365,6 +375,8 @@ void MoveBackward(float distance, int step_delay)
 void TurnLeft(int angle)
 {       
   directionMovement = LEFT;
+  motorLeft.setTargetDelay(2000);         
+  motorRight.setTargetDelay(2000);
   motorLeft.setDirectionBackward();
   motorRight.setDirectionForward();
   motorLeft.doRotationInAngle(angle);
@@ -374,6 +386,8 @@ void TurnLeft(int angle)
 void TurnRight(int angle)
 {  
   directionMovement = RIGHT;
+  motorLeft.setTargetDelay(2000);         
+  motorRight.setTargetDelay(2000);
   motorLeft.setDirectionForward();
   motorRight.setDirectionBackward();
   motorLeft.doRotationInAngle(angle);
