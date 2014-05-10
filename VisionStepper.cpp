@@ -6,7 +6,10 @@
 #define STOPPING_ENABLE_ON 3
 #define RUNNING 4
 #define PAUSE 5
-#define STARTING 6
+#define PAUSE_OFF 6
+#define STARTING 7
+
+const unsigned long waitBeforeTurningOff = 500;
 
 void VisionStepper::init()
 {
@@ -138,12 +141,21 @@ void VisionStepper::doLoop()
         if (pauseWhenFound && foundTargetSpeed)
         {
           globalState = PAUSE;
+          pauseTurnOff = 0;
           break;
         }
         //Serial.println(currentStepDelay);
       }
       break;
     case PAUSE:
+      if (pauseTurnOff > waitBeforeTurningOff)
+      {
+        enablePinState = LOW;
+        digitalWrite(enablePin, enablePinState);
+        globalState = PAUSE_OFF;
+      }
+      break;
+    case PAUSE_OFF:
       break;
     case STARTING:
       enablePinState = HIGH;
@@ -169,7 +181,12 @@ void VisionStepper::unpause()
   targetDelay = pauseDelay;
   foundTargetSpeed = false;
   pauseWhenFound = false;
-  if (globalState == PAUSE)
+  if (globalState == PAUSE_OFF)
+  {
+    enablePinState = HIGH;
+    digitalWrite(enablePin, enablePinState);
+  }
+  if (globalState == PAUSE || globalState == PAUSE_OFF)
   {
     stepSpeedCounter = 0;
     globalState = RUNNING;
