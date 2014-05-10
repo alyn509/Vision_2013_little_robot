@@ -9,7 +9,6 @@ class sensors_and_devices {
   public:    
     void init();
     VisionSensor back, left, right, front, front2;
-    int detectColor();
     void ThrowNet();
     void shootBall();
     void startShooting();

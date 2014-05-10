@@ -80,8 +80,3 @@ void sensors_and_devices::ThrowNet()
   //digitalWrite(ThrowNetPin, LOW);
 }
 
-int sensors_and_devices::detectColor()
-{
-  return analogRead(ColourSensorPin5);
-}
-

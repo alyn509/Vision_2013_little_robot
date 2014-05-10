@@ -75,23 +75,38 @@ void loop()
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
       //setSpecial();
-      MoveForward(100,fastSpeedDelay);
-      waitForMotorsStop(STATE_STOP);
+      MoveForward(83,fastSpeedDelay);
+      waitForMotorsStop(999);
       break;
    case 999:
       setSpecial();
-      TurnLeft(180);
+      TurnLeft(90);
       waitForMotorsStop(998);
       break;
    case 998:
       setSpecial();
-      MoveForward(80,fastSpeedDelay);
+      MoveForward(40,fastSpeedDelay);
       waitForMotorsStop(997);
       break;
    case 997:
       setSpecial();
-      TurnRight(180);
-      waitForMotorsStop(0);
+      TurnRight(90);
+      waitForMotorsStop(996);
+      break;
+   case 996:
+      setSpecial();
+      MoveForward(43,fastSpeedDelay);
+      waitForMotorsStop(995);
+      break;
+   case 995:
+      setSpecial();
+      TurnRight(90);
+      waitForMotorsStop(994);
+      break;
+   case 994:
+      //setSpecial();
+      MoveForward(30,fastSpeedDelay);
+      waitForMotorsStop(STATE_STOP);
       break;
    case 1:
       //Serial.println(SnD.detectColor());
@@ -327,16 +342,17 @@ void loop()
       motorsPaused = false;
     }
   }
-  
+  /*
   setBlackLineFlags();
   if (blackLineRight)
-    motorRight.setTargetDelay(fastSpeedDelay*1.5);
-  else
-    motorRight.setTargetDelay(fastSpeedDelay);
-  if (blackLineLeft)
-    motorLeft.setTargetDelay(fastSpeedDelay*1.5);
+    motorLeft.setTargetDelay(fastSpeedDelay/2);
   else
     motorLeft.setTargetDelay(fastSpeedDelay);
+  if (blackLineLeft)
+    motorRight.setTargetDelay(fastSpeedDelay/2);
+  else
+    motorRight.setTargetDelay(fastSpeedDelay);
+  */
   motorRight.doLoop();
   motorLeft.doLoop();
 }
@@ -441,31 +457,13 @@ void ArcToRight(int radius, int step_delay, boolean forward)
 
 void setBlackLineFlags()
 {
-  // order BCEAD or 23514
+  // order ABC or 254
   boolean A = analogRead(ColourSensorPin1) > 700;
   boolean B = analogRead(ColourSensorPin2) > 700;
   boolean C = analogRead(ColourSensorPin3) > 700;
-  boolean D = analogRead(ColourSensorPin4) > 700;
-  boolean E = analogRead(ColourSensorPin5) > 700;
-  blackLineDetectedAny = A | B | C | D | E;
-  blackLineDetectedAll = A & B & C & D & E;
-  if (blackLineDetectedAny & !blackLineDetectedAll)
-  {
-    if (B)
-    {
-      blackLineLeft = true;
-      blackLineRight = false;
-    }
-    if (D)
-    {
-      blackLineLeft = false;
-      blackLineRight = true;
-    }
-  }
-  else if (blackLineDetectedAll)
-  {
-    blackLineLeft = false;
-    blackLineRight = false;
-  }
+  blackLineDetectedAny = A | B | C;
+  blackLineDetectedAll = A & B & C;
+  blackLineLeft = (A | blackLineLeft) & !C;
+  blackLineRight = (C | blackLineRight) & !A;
 }
 
