@@ -28,6 +28,8 @@ class VisionStepper {
     void unpause();
     void setSpecial();
     void resetSpecial();
+    void slowDown();
+    void speedUp();
   private:
     void doSetup();
   private:
@@ -42,6 +44,7 @@ class VisionStepper {
     boolean foundTargetSpeed, raiseSpeed, pauseWhenFound;
     elapsedMicros stepTimer;
     elapsedMillis stopTimer, pauseTurnOff;
+    boolean slow;
     
     float stepCmRatio; // steps for a cm
     float degreeStepRatio; //steps for a degree turn;

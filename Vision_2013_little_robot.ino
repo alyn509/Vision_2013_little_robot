@@ -21,7 +21,7 @@
 #define FRIENDLY_TACTIC 20
 #define AGGRESSIVE_TACTIC 40
 
-elapsedMillis wait_time;
+elapsedMillis wait_time, waitSlow;
 int time_to_wait, state_to_set_after_wait;
 VisionStepper motorLeft;
 VisionStepper motorRight;
@@ -33,34 +33,12 @@ boolean ignoreSensors = false;
 int state = 0;
 int shotBalls = 0;
 int directionMovement = 0;
+boolean blackLineDetectedAny, blackLineDetectedAll, blackLineLeft, blackLineRight;
 
 void setup()
 {
   SnD.init();
-  Serial.begin(9600);
-  pinMode(ColourSensorPin1, INPUT);
-  pinMode(ColourSensorPin2, INPUT);
-  pinMode(ColourSensorPin3, INPUT);
-  pinMode(ColourSensorPin4, INPUT);
-  pinMode(ColourSensorPin5, INPUT);
-  while (1)
-  {
-    Serial.print(analogRead(ColourSensorPin2) > 700);
-    Serial.print(analogRead(ColourSensorPin3) > 700);
-    Serial.print(analogRead(ColourSensorPin5) > 700);
-    Serial.print(analogRead(ColourSensorPin1) > 700);
-    Serial.print(analogRead(ColourSensorPin4) > 700);
-    Serial.print(" A");
-    Serial.print(analogRead(ColourSensorPin1));
-    Serial.print(" B:");
-    Serial.print(analogRead(ColourSensorPin2));
-    Serial.print(" C:");
-    Serial.print(analogRead(ColourSensorPin3));
-    Serial.print(" D:");
-    Serial.print(analogRead(ColourSensorPin4));
-    Serial.print(" E:");
-    Serial.println(analogRead(ColourSensorPin5));
-  }
+  //Serial.begin(9600);
   
   motorLeft.init();
   motorLeft.initDirectionForward(HIGH);
@@ -78,6 +56,13 @@ void setup()
   obstructionDetected = false;
   motorsPaused = false;
   ignoreSensors = false;
+  
+  blackLineDetectedAny = false;
+  blackLineDetectedAll = false;
+  blackLineLeft = false;
+  blackLineRight = false;
+  waitSlow = 0;
+  
   delay(1000);
   state = 0;
 }
@@ -89,9 +74,9 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      setSpecial();
-      MoveForward(80,fastSpeedDelay);
-      waitForMotorsStop(999);
+      //setSpecial();
+      MoveForward(100,fastSpeedDelay);
+      waitForMotorsStop(STATE_STOP);
       break;
    case 999:
       setSpecial();
@@ -343,6 +328,15 @@ void loop()
     }
   }
   
+  setBlackLineFlags();
+  if (blackLineRight)
+    motorRight.setTargetDelay(fastSpeedDelay*1.5);
+  else
+    motorRight.setTargetDelay(fastSpeedDelay);
+  if (blackLineLeft)
+    motorLeft.setTargetDelay(fastSpeedDelay*1.5);
+  else
+    motorLeft.setTargetDelay(fastSpeedDelay);
   motorRight.doLoop();
   motorLeft.doLoop();
 }
@@ -374,7 +368,7 @@ void waitForMotorsStop(int state_after)
 }
 
 void MoveForward(float distance, int step_delay)
-{       
+{
   directionMovement = FRONT;
   motorLeft.setTargetDelay(step_delay);         
   motorRight.setTargetDelay(step_delay);
@@ -396,7 +390,7 @@ void MoveBackward(float distance, int step_delay)
 }
 
 void TurnLeft(int angle)
-{       
+{
   directionMovement = LEFT;
   motorLeft.setTargetDelay(2000);         
   motorRight.setTargetDelay(2000);
@@ -443,5 +437,35 @@ void ArcToRight(int radius, int step_delay, boolean forward)
     motorLeft.toggleDirection();
   motorLeft.doDistanceInCm(radius / 2);
   motorRight.doDistanceInCm(radius / 4);
+}
+
+void setBlackLineFlags()
+{
+  // order BCEAD or 23514
+  boolean A = analogRead(ColourSensorPin1) > 700;
+  boolean B = analogRead(ColourSensorPin2) > 700;
+  boolean C = analogRead(ColourSensorPin3) > 700;
+  boolean D = analogRead(ColourSensorPin4) > 700;
+  boolean E = analogRead(ColourSensorPin5) > 700;
+  blackLineDetectedAny = A | B | C | D | E;
+  blackLineDetectedAll = A & B & C & D & E;
+  if (blackLineDetectedAny & !blackLineDetectedAll)
+  {
+    if (B)
+    {
+      blackLineLeft = true;
+      blackLineRight = false;
+    }
+    if (D)
+    {
+      blackLineLeft = false;
+      blackLineRight = true;
+    }
+  }
+  else if (blackLineDetectedAll)
+  {
+    blackLineLeft = false;
+    blackLineRight = false;
+  }
 }
 
