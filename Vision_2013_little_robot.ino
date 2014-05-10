@@ -37,7 +37,30 @@ int directionMovement = 0;
 void setup()
 {
   SnD.init();
-  //Serial.begin(9600);
+  Serial.begin(9600);
+  pinMode(ColourSensorPin1, INPUT);
+  pinMode(ColourSensorPin2, INPUT);
+  pinMode(ColourSensorPin3, INPUT);
+  pinMode(ColourSensorPin4, INPUT);
+  pinMode(ColourSensorPin5, INPUT);
+  while (1)
+  {
+    Serial.print(analogRead(ColourSensorPin2) > 700);
+    Serial.print(analogRead(ColourSensorPin3) > 700);
+    Serial.print(analogRead(ColourSensorPin5) > 700);
+    Serial.print(analogRead(ColourSensorPin1) > 700);
+    Serial.print(analogRead(ColourSensorPin4) > 700);
+    Serial.print(" A");
+    Serial.print(analogRead(ColourSensorPin1));
+    Serial.print(" B:");
+    Serial.print(analogRead(ColourSensorPin2));
+    Serial.print(" C:");
+    Serial.print(analogRead(ColourSensorPin3));
+    Serial.print(" D:");
+    Serial.print(analogRead(ColourSensorPin4));
+    Serial.print(" E:");
+    Serial.println(analogRead(ColourSensorPin5));
+  }
   
   motorLeft.init();
   motorLeft.initDirectionForward(HIGH);
