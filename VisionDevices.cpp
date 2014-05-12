@@ -68,4 +68,3 @@ void VisionDevices::ThrowNet()
   delay(delayActions);
   //digitalWrite(ThrowNetPin, LOW);
 }
-
