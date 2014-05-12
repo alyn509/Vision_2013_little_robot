@@ -76,6 +76,8 @@ void VisionBase::turnRight(int angle)
 
 void VisionBase::setSpecial()
 {
+  leftMotor.setSpecial();
+  rightMotor.setSpecial();
 }
 
 void VisionBase::resetSpecial()
