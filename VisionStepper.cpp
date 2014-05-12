@@ -11,6 +11,8 @@
 
 const unsigned long waitBeforeTurningOff = 500;
 
+
+
 void VisionStepper::init()
 {
   stepsMadeSoFar = 0;
@@ -19,7 +21,6 @@ void VisionStepper::init()
   special = false;
   pauseWhenFound = false;
   forwardDirection = HIGH;
-  slow = false;
 }
 
 void VisionStepper::setSpecial()
@@ -83,6 +84,7 @@ void VisionStepper::doLoop()
       break;
     case STOPPING:
       enablePinState = LOW;
+      delay(250);
       digitalWrite(enablePin, enablePinState);
       globalState = STOPPED;
       break;
@@ -118,7 +120,7 @@ void VisionStepper::doLoop()
             raiseSpeed = false;
           }
         }
-        currentDelay = startSpeedDelay * 10 / sqrt(2000 * (stepSpeedCounter - slow * 1) + 100);
+        currentDelay = startSpeedDelay * 10 / sqrt(1000 * stepSpeedCounter + 100);
         if (!foundTargetSpeed)
         {
           if ((!raiseSpeed && currentDelay > targetDelay) ||
@@ -126,7 +128,7 @@ void VisionStepper::doLoop()
               foundTargetSpeed = true;
           else if (targetDelay == currentDelay)
               foundTargetSpeed = true;
-        }
+        } 
         stepsMadeSoFar++;
         stepsRemaining--;
         if (stepsRemaining <= stepSpeedCounter)
@@ -157,6 +159,7 @@ void VisionStepper::doLoop()
       }
       break;
     case PAUSE_OFF:
+
       break;
     case STARTING:
       enablePinState = HIGH;
@@ -178,19 +181,21 @@ void VisionStepper::pause()
     targetDelay = 10000;
   foundTargetSpeed = false;
   pauseWhenFound = true;
+
 }
 
 void VisionStepper::unpause()
 {
   targetDelay = pauseDelay;
   foundTargetSpeed = false;
-  pauseWhenFound = false;
+  pauseWhenFound = false; 
   if (globalState == PAUSE_OFF)
   {
     enablePinState = HIGH;
     digitalWrite(enablePin, enablePinState);
   }
   if (globalState == PAUSE || globalState == PAUSE_OFF)
+
   {
     stepSpeedCounter = 0;
     globalState = RUNNING;
@@ -260,14 +265,3 @@ void VisionStepper::doRotationInAngle(float angle)
 {
   doSteps(angle * degreeStepRatio);    // useless for arm motors
 }
-
-void VisionStepper::slowDown()
-{
-  slow = true;
-}
-
-void VisionStepper::speedUp()
-{
-  slow = false;
-}
-

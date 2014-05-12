@@ -30,6 +30,7 @@ class VisionStepper {
     void resetSpecial();
     void slowDown();
     void speedUp();
+
   private:
     void doSetup();
   private:
@@ -38,13 +39,13 @@ class VisionStepper {
     boolean forwardDirection;
     boolean special;
     int globalState;
-    unsigned long stepsMadeSoFar, stepsRemaining, stepSpeedCounter;
+    unsigned long stepsMadeSoFar, stepsRemaining;
     float maxSpeedDelay, startSpeedDelay, currentDelay, targetDelay, highPhaseDelay, pauseDelay;
+    int stepSpeedCounter;
     int old_state;
     boolean foundTargetSpeed, raiseSpeed, pauseWhenFound;
     elapsedMicros stepTimer;
     elapsedMillis stopTimer, pauseTurnOff;
-    boolean slow;
     
     float stepCmRatio; // steps for a cm
     float degreeStepRatio; //steps for a degree turn;
