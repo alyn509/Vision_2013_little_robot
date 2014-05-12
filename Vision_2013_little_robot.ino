@@ -62,39 +62,39 @@ void loop()
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 5:        //wait to complete and rotate left
-        devices.stopShooting();
-        devices.stopSpinningBallTray();
-        base.turnLeft(90);
-        state.waitFor(baseStop, STATE_NEXT);
+      devices.stopShooting();
+      devices.stopSpinningBallTray();
+      base.turnLeft(90);
+      state.waitFor(baseStop, STATE_NEXT);
       break;
     case 6:             //wait to complete and move forward
-        base.moveForward(35, mediumSpeedDelay);
-        state.waitFor(baseStop, STATE_NEXT);
+      base.moveForward(35, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
       break;
     case 7:             //wait to complete and move forward
-        base.ignoreSensors = true;
-        base.setSpecial();
-        base.moveForward(20, slowSpeedDelay);
-        state.waitFor(baseStop, STATE_NEXT);
+      base.ignoreSensors = true;
+      base.setSpecial();
+      base.moveForward(20, slowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
     break;
     case 8:        //wait to complete and move backward
-        base.ignoreSensors = false;
-        base.resetSpecial();
-        base.moveBackward(55, mediumSpeedDelay);
-        state.waitFor(baseStop, STATE_NEXT);
+      base.ignoreSensors = false;
+      base.resetSpecial();
+      base.moveBackward(55, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
       break;
     case 9:
-        base.turnRight(90);
-        state.waitFor(baseStop, STATE_NEXT);
+      base.turnRight(90);
+      state.waitFor(baseStop, STATE_NEXT);
       break;
     case 10:   
-        base.moveBackward(28,mediumSpeedDelay);
-        state.waitFor(baseStop, STATE_NEXT);
+      base.moveBackward(28,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
       break;
     case 11:
-        delay(5000);
-        devices.ThrowNet();
-        state = STATE_STOP;
+      delay(5000);
+      devices.ThrowNet();
+      state = STATE_STOP;
       break;
       
       //******************************************AGGRESSIVE TACTIC**************************************************//
@@ -171,6 +171,7 @@ void loop()
       state.doLoop();
   }
   base.doLoop();
+  checkForObstacle();
   testIfTimeUp();
 }
 
@@ -183,6 +184,14 @@ void testIfTimeUp()
     state = STATE_NET;
     stoppedEverything = true;
   }
+}
+
+void checkForObstacle()
+{
+  if(base.obstructionDetected)   
+    base.pause();
+  else
+    base.unpause();
 }
 
 boolean baseStop()

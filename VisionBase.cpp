@@ -125,6 +125,7 @@ boolean VisionBase::isStopped()
 
 void VisionBase::checkObstructions()
 {
+  checkObstructions();
   obstructionDetected = false;
   if (frontDetected() && directionMovement == FRONT)
     obstructionDetected = true;
