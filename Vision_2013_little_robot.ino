@@ -6,8 +6,10 @@
 #include "VisionBase.h"
 #include "VisionDevices.h"
 #include "VisionState.h"
+#include "pins_little_robot.h"
+#include "little_robot_constants.h"
 
-#define BLACK 100
+#define NINETYSECONDS 88000L
 
 #define CLASSIC_TACTIC 0
 #define FRIENDLY_TACTIC 20
@@ -16,20 +18,22 @@
 VisionBase base;
 VisionDevices devices;
 boolean ignoreSensors = false;
+elapsedMillis timeUpTimer;
 boolean stoppedEverything = false;
 
 VisionState state;
 int shotBalls = 0;
-elapsedMillis ninetySecondsTimer;
 
 void setup()
 { 
+  timeUpTimer = 0;
+  
   base.init();
   devices.init();
+  ignoreSensors = false;
   //Serial.begin(9600);  
   base.setStartDelays(defaultStartSpeedDelay);
-  ninetySecondsTimer = 0;
-  state.wait(1000, 0);
+  state.wait(100, 0);
 }
 
 void loop()
@@ -39,7 +43,7 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      base.moveForward(150,highPhaseDelay);
+      base.moveForward(100,ultraSlowSpeedDelay);
       state.waitFor(baseStop, STATE_STOP);
       break;
     case 1:
@@ -170,20 +174,17 @@ void loop()
     default:
       state.doLoop();
   }
-  base.doLoop();
+  base.checkObstructions();
   checkForObstacle();
+  base.doLoop();
   //testIfTimeUp();
 }
 
-void testIfTimeUp()
-{    
-  if (ninetySecondsTimer > 10000L && !stoppedEverything)//90 sec
-  {
-    base.stopNow();
-    devices.stopShooting();
-    state = STATE_NET;
-    stoppedEverything = true;
-  }
+
+void timeIsUpStopEverything()
+{
+  base.stopNow();
+  state = STATE_STOP;
 }
 
 void checkForObstacle()

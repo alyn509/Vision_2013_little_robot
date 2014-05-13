@@ -25,13 +25,13 @@ void VisionBase::init()
   
   directionMovement = NONE;
   obstructionDetected = false;
-  oppositeSide = digitalRead(colorYellowPin);
+  oppositeSide /*= digitalRead(colorYellowPin)*/ = false;
 }
 
 void VisionBase::setStartDelays(int startDelay)
 {
-  leftMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay);
-  rightMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay);
+  leftMotor.initDelays(startDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay);
+  rightMotor.initDelays(startDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay);
 }
 
 void VisionBase::moveForward(float distance, int step_delay)
@@ -116,7 +116,7 @@ void VisionBase::unpause()
 
 boolean VisionBase::frontDetected()
 {
-  return frontLeft.detect() && /*frontFront.detect() &&*/ frontRight.detect();
+  return frontLeft.detect() || /*frontFront.detect() &&*/ frontRight.detect();
 }
 
 boolean VisionBase::leftDetected()
