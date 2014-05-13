@@ -1,4 +1,4 @@
-  #include "VisionSensorsDevices.h"
+  #include "VisionDevices.h"
 #include "pins_little_robot.h"
 #include <elapsedMillis.h>
 
@@ -30,12 +30,6 @@ void sensors_and_devices::init()
   
   pinMode(ThrowNetPin, OUTPUT);
   digitalWrite(ThrowNetPin, LOW);
-  
-  back.initPin(BackSenzorPin);
-  front.initPin(FrontSenzorPin);
-  front2.initPin(FrontSensorPin2);
-  left.initPin(LeftSenzorPin);
-  right.initPin(RightSenzorPin);
 }
 
 void sensors_and_devices::shootBall()
