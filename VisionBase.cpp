@@ -2,22 +2,20 @@
 
 void VisionBase::init()
 {
-  frontLeft.initPin(frontLeftSenzorPin);
-  frontFront.initPin(frontFrontSenzorPin);
-  frontRight.initPin(frontRightSenzorPin);
+  frontLeft.initPin(frontLeftSensorPin);
+  //frontFront.initPin(frontFrontSensorPin);
+  frontRight.initPin(frontRightSensorPin);
   
-  left.initPin(leftSenzorPin);
-  right.initPin(rightSenzorPin);  
-  back.initPin(backSenzorPin);
-  
-  leftEncoder.initPin(leftMotorEncoderPin);
+  left.initPin(leftSensorPin);
+  right.initPin(rightSensorPin);  
+  back.initPin(backSensorPin);
+
   leftMotor.init();
   leftMotor.initDirectionForward(HIGH);
   leftMotor.initPins(leftMotorEnablePin, leftMotorDirectionPin, leftMotorStepPin);
   leftMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay); 
   leftMotor.initSizes(wheelDiameter, wheelRevolutionSteps,distanceBetweenWheels);
   
-  rightEncoder.initPin(rightMotorEncoderPin);
   rightMotor.init();
   rightMotor.initDirectionForward(LOW);
   rightMotor.initPins(rightMotorEnablePin, rightMotorDirectionPin, rightMotorStepPin);
