@@ -78,8 +78,13 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      MoveForward(60,highPhaseDelay);
-      waitForMotorsStop(2);
+  motorLeft.setTargetDelay(8000);         
+  motorRight.setTargetDelay(1000);
+  motorLeft.setDirectionForward();
+  motorRight.setDirectionForward();
+  motorLeft.doDistanceInCm(300);
+  motorRight.doDistanceInCm(300);
+      state = 1;
       break;
     case 1:
       //Serial.println(SnD.detectColor());
@@ -88,14 +93,13 @@ void loop()
         motorLeft.pause();
         motorRight.pause();
         state++;
-      }  */              //wait to complete and rotate left
-      TurnLeft(180);
-      waitForMotorsStop(state + 1);
+      }  */              //wait to complete and rotate lef
+      if (motorLeft.stepsMadeSoFar / motorLeft.stepCmRatio > 10)
+         state = 2;
       break;
     case 2:                    //wait to complete and rotate left
-      ignoreSensors = true;
-      TurnLeft(90);
-      waitForMotorsStop(3);
+      motorLeft.setTargetDelay(1000);
+      waitForMotorsStop(STATE_STOP);
       break;
     case 3:                    //wait to complete and move forward  
       ignoreSensors = false;

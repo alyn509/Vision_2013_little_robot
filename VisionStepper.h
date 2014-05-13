@@ -32,7 +32,7 @@ class VisionStepper {
     void speedUp();
   private:
     void doSetup();
-  private:
+  public:
     int enablePin, directionPin, stepPin;
     int enablePinState, directionPinState, stepPinState;
     boolean forwardDirection;
