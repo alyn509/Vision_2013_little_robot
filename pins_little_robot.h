@@ -1,3 +1,6 @@
+#ifndef pins_little_robot_h
+#define pins_little_robot_h
+
 const int ColourSensorPin1 = 9;	        //  analog
 const int ColourSensorPin2 = 11;	//  analog
 const int ColourSensorPin3 = 12;	//  analog
@@ -25,5 +28,6 @@ const int rightMotorDirectionPin = 13;
 const int colorRedPin = 31;
 const int colorYellowPin = 33;
 
+#endif
 
 

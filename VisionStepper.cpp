@@ -1,13 +1,34 @@
 #include "VisionStepper.h"
 
-#define STOPPED 0
-#define STOPPING 1
-#define WAIT_FOR_STOPPING 2
-#define STOPPING_ENABLE_ON 3
-#define RUNNING 4
-#define PAUSE 5
-#define PAUSE_OFF 6
-#define STARTING 7
+// motorState states
+#define STARTING 0
+#define RUNNING 1
+#define PAUSING_SLOWING 2
+#define PAUSING 3
+#define PAUSED 4
+#define RESUME 5
+#define STOPPING_SLOWING 6
+#define STOPPING 7
+#define STOPPED 8
+
+// enableState states
+#define TURN_ON 0
+#define ON 1
+#define DELAYED_TURN_OFF 2
+#define TURN_OFF 3
+#define OFF 4
+
+// speedState states
+#define ACCELERATING 0
+#define SLOWING 1
+#define CONSTANT 2
+#define UNDETERMINED 3
+#define START 4
+#define STOP 5
+
+// stepState states
+#define STEP_LOW 0
+#define STEP_HIGH 1
 
 const unsigned long waitBeforeTurningOff = 500;
 
@@ -15,19 +36,11 @@ void VisionStepper::init()
 {
   stepsMadeSoFar = 0;
   stepsRemaining = 0;
-  globalState = STOPPED;
-  special = false;
-  pauseWhenFound = false;
+  motorState = STOPPED;
+  speedState = STATE_STOP;
+  enableState = OFF;
+  stepState = STATE_STOP;
   forwardDirection = HIGH;
-}
-
-void VisionStepper::setSpecial()
-{
-  special = true;
-}
-void VisionStepper::resetSpecial()
-{
-  special = false;
 }
 
 void VisionStepper::initDirectionForward(boolean forward)
@@ -54,11 +67,13 @@ void VisionStepper::initPins(int enablePin, int directionPin, int stepPin)
   digitalWrite(stepPin, stepPinState);
 }
 
-void VisionStepper::initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long maxSpeedDelay)
+void VisionStepper::initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long pauseSpeedDelay, unsigned long delayBeforeTurnOff)
 {
-  this->maxSpeedDelay = maxSpeedDelay;
   this->startSpeedDelay = startSpeedDelay;
   this->highPhaseDelay = highPhaseDelay;
+  this->pauseSpeedDelay = pauseSpeedDelay;
+  this->delayBeforeTurnOff = delayBeforeTurnOff;
+  currentDelay = startSpeedDelay;
 }
 
 void VisionStepper::initSizes(float wheelDiameter, int wheelRevolutionSteps, float distanceBetweenWheels)
@@ -77,133 +92,150 @@ void VisionStepper::initStepCmRatio(float stepCmRatio)
 
 void VisionStepper::doLoop()
 {
-  switch (globalState) {
-    case STOPPED:
-      break;
-    case STOPPING:
-      enablePinState = LOW;
-      digitalWrite(enablePin, enablePinState);
-      globalState = STOPPED;
-      break;
-    case WAIT_FOR_STOPPING:
-      if (stopTimer > 200)
-        globalState = STOPPING_ENABLE_ON;
-      break;
-    case STOPPING_ENABLE_ON:
-      if (special)
-      {
-        globalState = STOPPED;
-        resetSpecial();
-      }
-      else
-        globalState = STOPPING;
+  switch (motorState)
+  {
+    case STARTING:
+      motorState = RUNNING;
+      enableState = TURN_ON;
       break;
     case RUNNING:
-      if (((stepPinState == LOW) && (stepTimer > currentDelay)) ||
-          ((stepPinState == HIGH) && (stepTimer > highPhaseDelay))
-          )
+      if (stepsRemaining <= stepSpeedCounter)
+        motorState = STOPPING_SLOWING;
+      break;
+    case PAUSING_SLOWING:
+      savedWhenPausingDelay = targetDelay;
+      setTargetDelay(pauseSpeedDelay);
+      motorState = PAUSING;
+      break;
+    case PAUSING:
+      if (speedState == CONSTANT)
       {
-        stepTimer = 0;
-        if (!foundTargetSpeed)
-        {
-          if (currentDelay > targetDelay)
-          {
-            stepSpeedCounter++;
-            raiseSpeed = true;
-          }
-          else if (currentDelay < targetDelay)
-          {
-            stepSpeedCounter--;
-            raiseSpeed = false;
-          }
-        }
-        currentDelay = startSpeedDelay * 10 / sqrt(2000 * stepSpeedCounter + 100);
-        if (!foundTargetSpeed)
-        {
-          if ((!raiseSpeed && currentDelay > targetDelay) ||
-              (raiseSpeed && currentDelay < targetDelay))
-              foundTargetSpeed = true;
-          else if (targetDelay == currentDelay)
-              foundTargetSpeed = true;
-        }
-        stepsMadeSoFar++;
-        stepsRemaining--;
-        if (stepsRemaining <= stepSpeedCounter)
-          setTargetDelay(startSpeedDelay);
-        stepPinState = !stepPinState;
-        digitalWrite(stepPin, stepPinState);
-        if (stepsRemaining == 0)
-        {
-          globalState = WAIT_FOR_STOPPING;
-          stopTimer = 0;
-          break;
-        }
-        if (pauseWhenFound && foundTargetSpeed)
-        {
-          globalState = PAUSE;
-          pauseTurnOff = 0;
-          break;
-        }
-        //Serial.println(currentStepDelay);
+        enableState = DELAYED_TURN_OFF;
+        motorState = PAUSED;
       }
       break;
-    case PAUSE:
-      if (pauseTurnOff > waitBeforeTurningOff)
+    case PAUSED:
+      break;
+    case RESUME:
+      setTargetDelay(savedWhenPausingDelay);
+      if (enableState != ON)
+        enableState = TURN_ON;
+      motorState = RUNNING;
+      break;
+    case STOPPING_SLOWING:
+      setTargetDelay(startSpeedDelay);
+      motorState = STOPPING;
+      break;
+    case STOPPING:
+      if (stepsRemaining == 0)
       {
-        enablePinState = LOW;
-        digitalWrite(enablePin, enablePinState);
-        globalState = PAUSE_OFF;
+        enableState = DELAYED_TURN_OFF;
+        motorState = STOPPED;
       }
       break;
-    case PAUSE_OFF:
+    case STOPPED:
       break;
-    case STARTING:
+    default:
+      motorState.doLoop();
+  }
+  switch (enableState)
+  {
+    case TURN_ON:
+      speedState = START;
       enablePinState = HIGH;
       digitalWrite(enablePin, enablePinState);
-      globalState = RUNNING;
-      stepTimer = 0;
-      stepSpeedCounter = 0;
-      currentDelay = startSpeedDelay;
-      foundTargetSpeed = false;
+      enableState = ON;
       break;
+    case ON:
+      break;
+    case DELAYED_TURN_OFF:
+      speedState = STOP;
+      enablePinState = LOW;
+      enableState.wait(delayBeforeTurnOff, TURN_OFF);
+      break;
+    case TURN_OFF:
+      digitalWrite(enablePin, enablePinState);
+      enableState = OFF;
+      break;
+    case OFF:
+      break;
+    default:
+      enableState.doLoop();
   }
+  switch (speedState)
+  {
+    case ACCELERATING:
+      if (currentDelay < targetDelay)
+        speedState = CONSTANT;
+      break;
+    case SLOWING:
+      if (currentDelay > targetDelay)
+        speedState = CONSTANT;
+      break;
+    case CONSTANT:
+      break;
+    case UNDETERMINED:
+      if (currentDelay > targetDelay)
+        speedState = SLOWING;
+      else if (currentDelay < targetDelay)
+        speedState = ACCELERATING;
+      else
+        speedState = CONSTANT;
+      break;
+    case START:
+      stepSpeedCounter = 0;
+      speedState = ACCELERATING;
+      stepState = STEP_LOW;
+      break;
+    case STOP:
+      stepState = STATE_STOP;
+      break;
+    default:
+      speedState.doLoop();
+  }
+  switch (stepState) {
+    case STEP_LOW:
+      stepsMadeSoFar++;
+      stepsRemaining--;
+      if (speedState == ACCELERATING)
+        stepSpeedCounter++;
+      else if (speedState == SLOWING)
+        stepSpeedCounter--;
+      currentDelay = computeSpeed();
+      stepPinState = LOW;
+      digitalWrite(stepPin, stepPinState);
+      stepState.waitMicros(currentDelay / 6, STEP_HIGH);
+      break;
+    case STEP_HIGH:
+      stepPinState = HIGH;
+      digitalWrite(stepPin, stepPinState);
+      stepState.waitMicros(currentDelay, STEP_LOW);
+      break;
+    default:
+      stepState.doLoop();
+  }
+}
+
+float VisionStepper::computeSpeed()
+{
+  return startSpeedDelay * 10 / sqrt(2000 * stepSpeedCounter + 100);
 }
 
 void VisionStepper::pause()
 {
-  if (pauseDelay > 10000)
-    targetDelay = 40000;
-  else
-    targetDelay = 10000;
-  foundTargetSpeed = false;
-  pauseWhenFound = true;
+  if (motorState == RUNNING)
+    motorState = PAUSING_SLOWING;
 }
 
 void VisionStepper::unpause()
 {
-  targetDelay = pauseDelay;
-  foundTargetSpeed = false;
-  pauseWhenFound = false;
-  if (globalState == PAUSE_OFF)
-  {
-    enablePinState = HIGH;
-    digitalWrite(enablePin, enablePinState);
-  }
-  if (globalState == PAUSE || globalState == PAUSE_OFF)
-  {
-    stepSpeedCounter = 0;
-    globalState = RUNNING;
-  }
+  if (motorState == PAUSING_SLOWING || motorState == PAUSING || motorState == PAUSED)
+    motorState = RESUME;
 }
 
 void VisionStepper::stopNow()
 {
-  globalState = STOPPING;
-}
-
-void VisionStepper::setMaxSpeed()
-{
-  setTargetDelay(maxSpeedDelay);
+  motorState = STOPPING;
 }
 
 void VisionStepper::setTargetDelay(unsigned long targetDelay)
@@ -211,13 +243,12 @@ void VisionStepper::setTargetDelay(unsigned long targetDelay)
   if (this->targetDelay == targetDelay)
     return;
   this->targetDelay = targetDelay;
-  pauseDelay = targetDelay;
-  foundTargetSpeed = false;
+  speedState = UNDETERMINED;
 }
 
 boolean VisionStepper::isOff()
 {
-  return globalState == STOPPED;
+  return motorState == STOPPED;
 }
 
 void VisionStepper::setDirectionForward()
@@ -240,14 +271,14 @@ void VisionStepper::toggleDirection()
 
 boolean VisionStepper::isAtTargetSpeed()
 {
-  return foundTargetSpeed;
+  return motorState == RUNNING;
 }
 
 void VisionStepper::doSteps(unsigned long stepNumber)
 {
   stepsMadeSoFar = 0;
-  stepsRemaining = stepNumber * 2; //leave as-is!
-  globalState = STARTING;
+  stepsRemaining = stepNumber;
+  motorState = STARTING;
 }
 
 void VisionStepper::doDistanceInCm(float distance)
@@ -257,5 +288,6 @@ void VisionStepper::doDistanceInCm(float distance)
 
 void VisionStepper::doRotationInAngle(float angle)
 {
-  doSteps(angle * degreeStepRatio);    // useless for arm motors
+  doSteps(angle * degreeStepRatio);
 }
+

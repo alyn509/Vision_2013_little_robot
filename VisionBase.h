@@ -27,19 +27,18 @@ class VisionBase {
     void checkObstructions();
     void turnLeft(int angle);
     void turnRight(int angle);
-    void setSpecial();
-    void resetSpecial();
     void pause();
     void unpause();
-    void doLoop();
     void stopNow();
+    void doLoop();
     boolean isStopped();
   public:
     VisionStepper leftMotor, rightMotor;
-    VisionSensor back, left, right, frontLeft, frontFront, frontRight;
+    VisionEncoder leftEncoder, rightEncoder;
+    VisionSensor backLeft, backBack, backRight, left, right, frontLeft, frontFront, frontRight;
     int directionMovement;
-    boolean obstructionDetected, ignoreSensors;
-    boolean oppositeSide;
+    boolean obstructionDetected;
 };
 
 #endif
+

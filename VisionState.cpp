@@ -1,18 +1,35 @@
 #include "VisionState.h"
 
-void VisionState::wait(int timeInMs, int nextState)
+void VisionState::wait(unsigned long timeInMs, int nextState)
 {
+  if (nextState == STATE_NEXT)
+    stateToSetAfterWait = *this + 1;
+  else
+    stateToSetAfterWait = nextState;
   *this = STATE_WAIT;
   time = 0;
   timeToWait = timeInMs;
-  stateToSetAfterWait = nextState;
+}
+
+void VisionState::waitMicros(unsigned long timeInMicros, int nextState)
+{
+  if (nextState == STATE_NEXT)
+    stateToSetAfterWait = *this + 1;
+  else
+    stateToSetAfterWait = nextState;
+  *this = STATE_WAIT_MICROS;
+  timeInMicros = 0;
+  timeToWaitInMicros = timeInMicros;
 }
 
 void VisionState::waitFor(boolean (*functionToTestFor)(), int nextState)
 {
+  if (nextState == STATE_NEXT)
+    stateToSetAfterWait = *this + 1;
+  else
+    stateToSetAfterWait = nextState;
   *this = STATE_WAIT_FOR;
   testFunction = functionToTestFor;
-  stateToSetAfterWait = nextState;
 }
 
 void VisionState::doLoop()
@@ -23,6 +40,10 @@ void VisionState::doLoop()
       break;
     case STATE_WAIT:
       if (time > timeToWait)
+        *this = stateToSetAfterWait;
+      break;
+    case STATE_WAIT_MICROS:
+      if (timeInMicros > timeToWaitInMicros)
         *this = stateToSetAfterWait;
       break;
     case STATE_WAIT_FOR:
@@ -41,10 +62,6 @@ int VisionState::operator =(const int state)
 {
   if (state == STATE_NEXT)
     return ++(this->state);
-    
-  if (state == STATE_LAST)
-    return --(this->state);
-  
   return (this->state = state);
 }
 
