@@ -39,6 +39,7 @@ class VisionBase {
     VisionSensor back, left, right, frontLeft, frontFront, frontRight;
     int directionMovement;
     boolean obstructionDetected, ignoreSensors;
+    boolean oppositeSide;
 };
 
 #endif

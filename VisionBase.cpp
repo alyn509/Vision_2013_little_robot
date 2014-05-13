@@ -2,6 +2,7 @@
 
 void VisionBase::init()
 {
+  
   frontLeft.initPin(frontLeftSensorPin);
   //frontFront.initPin(frontFrontSensorPin);
   frontRight.initPin(frontRightSensorPin);
@@ -24,6 +25,7 @@ void VisionBase::init()
   
   directionMovement = NONE;
   obstructionDetected = false;
+  oppositeSide = digitalRead(colorYellowPin);
 }
 
 void VisionBase::setStartDelays(int startDelay)
@@ -57,8 +59,16 @@ void VisionBase::moveBackward(float distance, int step_delay)
 void VisionBase::turnLeft(int angle)
 {
   directionMovement = LEFT;
-  leftMotor.setDirectionBackward();
-  rightMotor.setDirectionForward();
+  if(!oppositeSide)
+  {
+    leftMotor.setDirectionBackward();
+    rightMotor.setDirectionForward();
+  }
+  else
+  {    
+    leftMotor.setDirectionForward();
+    rightMotor.setDirectionBackward();
+  }
   leftMotor.doRotationInAngle(angle);
   rightMotor.doRotationInAngle(angle); 
 }
@@ -66,8 +76,16 @@ void VisionBase::turnLeft(int angle)
 void VisionBase::turnRight(int angle)
 {  
   directionMovement = RIGHT;
-  leftMotor.setDirectionForward();
-  rightMotor.setDirectionBackward();
+  if(!oppositeSide)
+  {
+    leftMotor.setDirectionForward();
+    rightMotor.setDirectionBackward();
+  }
+  else
+  { 
+    leftMotor.setDirectionBackward();
+    rightMotor.setDirectionForward();   
+  }
   leftMotor.doRotationInAngle(angle);
   rightMotor.doRotationInAngle(angle);
 }
