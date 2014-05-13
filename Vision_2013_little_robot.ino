@@ -78,16 +78,10 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      //setSpecial();
-      motorLeft.setTargetDelay(fastSpeedDelay);         
-      motorRight.setTargetDelay(fastSpeedDelay*5);
-      motorLeft.setDirectionForward();
-      motorRight.setDirectionForward();
-      motorLeft.doDistanceInCm(999999);
-      motorRight.doDistanceInCm(999999);
-      waitForMotorsStop(state);
+      MoveForward(60,highPhaseDelay);
+      waitForMotorsStop(2);
       break;
-   case 1:
+    case 1:
       //Serial.println(SnD.detectColor());
       /*if(SnD.detectColor() == BLACK)
       {
@@ -96,104 +90,64 @@ void loop()
         state++;
       }  */              //wait to complete and rotate left
       TurnLeft(180);
-      waitForMotorsStop(state - 1);
-      //delay(1000);
-      //SnD.startSpinningBallTray();
-      //MoveForward(28,ultraSlowSpeedDelay);
-      //waitForMotorsStop(STATE_STOP);
-      //state = STATE_STOP;
+      waitForMotorsStop(state + 1);
       break;
-   case 2:                    //wait to complete and rotate left
+    case 2:                    //wait to complete and rotate left
+      ignoreSensors = true;
       TurnLeft(90);
-      waitForMotorsStop(state + 1);
+      waitForMotorsStop(3);
       break;
-    case 3:                    //wait to complete and move forward   
-      MoveForward(40,mediumSpeedDelay);
-      waitForMotorsStop(state + 1);
+    case 3:                    //wait to complete and move forward  
+      ignoreSensors = false;
+      MoveForward(200,fastSpeedDelay);//57,mediumSpeedDelay);
+      waitForMotorsStop(4);
       break;
     case 4:                    //shoot balls 
-      SnD.startShooting();
+      SnD.startShooting();  
       delay(1000);
+      ignoreSensors = true;
       SnD.startSpinningBallTray();
-      //setStartDelays(ultraSlowStartSpeedDelay);
-      MoveForward(30,ultraSlowSpeedDelay);
-      waitForMotorsStop(state + 1);
+      MoveForward(20,ultraSlowSpeedDelay);
+      waitForMotorsStop(5);
       break;
-        /*
-        if(shotBalls < 6)
-        {   
-          if(shotBalls == 0){
-            SnD.startShooting();
-            delay(500);
-          }
-          
-         else{
-            SnD.stopShooting();
-            delay(100);
-            SnD.startShooting();
-         }
-         
-         //SnD.startSpinningBallTray();
-         //delay(250);
-         SnD.shootBall();
-         MoveForward(5,slowSpeedDelay);
-         shotBalls++;
-         waitForMotorsStop(state);
-         
-         //SnD.startSpinningBallTray();
-        }
-        else
-        {     
-          SnD.stopShooting();
-          SnD.stopSpinningBallTray();
-          MoveForward(55,slowSpeedDelay);
-          waitForMotorsStop(state + 1);
-        }
-        */
-    case 5:
-        SnD.stopShooting();
-        SnD.stopSpinningBallTray();
-        MoveForward(48,mediumSpeedDelay);
-        waitForMotorsStop(state + 1);
-        break;
-    case 6:        //wait to complete and rotate left
-        //setStartDelays(defaultStartSpeedDelay);
+    case 5:        //wait to complete and rotate left
+        //SnD.stopShooting();
+        //SnD.stopSpinningBallTray();
+        MoveForward(45, mediumSpeedDelay);
+        waitForMotorsStop(6);
+      break;
+    case 6:             //wait to complete and move forward
         TurnLeft(90);
-        waitForMotorsStop(state + 1);
+        waitForMotorsStop(7);
       break;
     case 7:             //wait to complete and move forward
+        //ignoreSensors = false;
         ignoreSensors = true;
-        MoveForward(35, mediumSpeedDelay);
-        waitForMotorsStop(state + 1);
-      break;
-    case 8:             //wait to complete and move forward
-        //ignoreSensors = true;
         motorLeft.setSpecial();
         motorRight.setSpecial();
-        MoveForward(20, slowSpeedDelay);
-        waitForMotorsStop(state + 1);
+        MoveForward(50, slowSpeedDelay);
+        waitForMotorsStop(8);
     break;
-    case 9:        //wait to complete and move backward
+    case 8:        //wait to complete and move backward
         ignoreSensors = false;
         motorLeft.resetSpecial();
         motorRight.resetSpecial();
         MoveBackward(55, mediumSpeedDelay);
-        waitForMotorsStop(state + 1);
+        waitForMotorsStop(9);
       break;
-    case 10:
+    case 9:
         TurnRight(90);
-        waitForMotorsStop(state + 1);
+        waitForMotorsStop(10);
       break;
-    case 11:   
+    case 10:   
         MoveBackward(28,mediumSpeedDelay);
-        waitForMotorsStop(state + 1);
+        waitForMotorsStop(11);
       break;
-    case 12:
+    case 11:
         delay(5000);
         SnD.ThrowNet();
         state = STATE_STOP;
-      break;
-      
+        
       //******************************************AGGRESSIVE TACTIC**************************************************//
     case AGGRESSIVE_TACTIC:
       MoveForward(45,mediumSpeedDelay);
