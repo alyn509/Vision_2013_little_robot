@@ -1,130 +1,200 @@
+#include <elapsedMillis.h>
+#include <Stepper.h>
+#include <LiquidCrystal.h>
+#include <TimerThree.h>
+#include "VisionStepper.h"
 #include "VisionBase.h"
+#include "VisionDevices.h"
+#include "VisionState.h"
 
-void VisionBase::init()
-{
-  frontLeft.initPin(frontLeftSenzorPin);
-  //frontFront.initPin(frontFrontSenzorPin);
-  frontRight.initPin(frontRightSenzorPin);
-  
-  left.initPin(leftSenzorPin);
-  right.initPin(rightSenzorPin);
-  
-  back.initPin(backSenzorPin);
-  
-  leftMotor.init();
-  leftMotor.initDirectionForward(HIGH);
-  leftMotor.initPins(leftMotorEnablePinLeft, leftMotorDirectionPinLeft, leftMotorStepPinLeft);
-  leftMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay); 
-  leftMotor.initSizes(wheelDiameter, wheelRevolutionSteps,distanceBetweenWheels);
-  
-  rightMotor.init();
-  rightMotor.initDirectionForward(LOW);
-  rightMotor.initPins(rightMotorEnablePin, rightMotorDirectionPin, rightMotorStepPin);
-  rightMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay); 
-  rightMotor.initSizes(wheelDiameter, wheelRevolutionSteps,distanceBetweenWheels);
-  
-  directionMovement = NONE;
-  obstructionDetected = false;
+#define BLACK 100
+
+#define CLASSIC_TACTIC 0
+#define FRIENDLY_TACTIC 20
+#define AGGRESSIVE_TACTIC 40
+
+VisionBase base;
+VisionDevices devices;
+boolean ignoreSensors = false;
+boolean stoppedEverything = false;
+
+VisionState state;
+int shotBalls = 0;
+elapsedMillis ninetySecondsTimer;
+
+void setup()
+{ 
+  base.init();
+  devices.init();
+  //Serial.begin(9600);  
+  base.setStartDelays(defaultStartSpeedDelay);
+  ninetySecondsTimer = 0;
+  state.wait(1000, 0);
 }
 
-void VisionBase::moveForward(float distance, int step_delay)
-{       
-  directionMovement = FRONT;
-  leftMotor.setTargetDelay(step_delay);         
-  rightMotor.setTargetDelay(step_delay);
-  leftMotor.setDirectionForward();
-  rightMotor.setDirectionForward();
-  leftMotor.doDistanceInCm(distance);
-  rightMotor.doDistanceInCm(distance);
-}
-
-void VisionBase::moveBackward(float distance, int step_delay)
-{    
-  directionMovement = BACK;
-  leftMotor.setTargetDelay(step_delay);         
-  rightMotor.setTargetDelay(step_delay);
-  leftMotor.setDirectionBackward();
-  rightMotor.setDirectionBackward();
-  leftMotor.doDistanceInCm(distance);
-  rightMotor.doDistanceInCm(distance);
-}
-
-void VisionBase::turnLeft(int angle)
-{
-  directionMovement = LEFT;
-  leftMotor.setDirectionBackward();
-  rightMotor.setDirectionForward();
-  leftMotor.doRotationInAngle(angle);
-  rightMotor.doRotationInAngle(angle); 
-}
-
-void VisionBase::turnRight(int angle)
+void loop()
 {  
-  directionMovement = RIGHT;
-  leftMotor.setDirectionForward();
-  rightMotor.setDirectionBackward();
-  leftMotor.doRotationInAngle(angle);
-  rightMotor.doRotationInAngle(angle);
+  switch (state)
+  {
+    
+      //******************************************CLASSIC TACTIC**************************************************//
+    case CLASSIC_TACTIC:     //move forward
+      base.moveForward(150,highPhaseDelay);
+      state.waitFor(baseStop, STATE_STOP);
+      break;
+    case 1:
+      base.turnLeft(180);
+      state.waitFor(baseStop, STATE_LAST);
+      break;
+    case 2:                    //wait to complete and rotate left
+      base.turnLeft(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 3:                    //wait to complete and move forward   
+      base.moveForward(40,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 4:                    //shoot balls 
+      devices.startShooting();  
+      delay(1000);
+      devices.startSpinningBallTray();
+      base.moveForward(78,ultraSlowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 5:        //wait to complete and rotate left
+      devices.stopShooting();
+      devices.stopSpinningBallTray();
+      base.turnLeft(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 6:             //wait to complete and move forward
+      base.moveForward(35, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 7:             //wait to complete and move forward
+      ignoreSensors = true;
+      base.setSpecial();
+      base.moveForward(20, slowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+    break;
+    case 8:        //wait to complete and move backward
+      ignoreSensors = false;
+      base.resetSpecial();
+      base.moveBackward(55, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 9:
+      base.turnRight(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 10:   
+      base.moveBackward(28,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 11:
+      delay(5000);
+      devices.ThrowNet();
+      state = STATE_STOP;
+      break;
+      
+      //******************************************AGGRESSIVE TACTIC**************************************************//
+    case AGGRESSIVE_TACTIC:
+      base.moveForward(45,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 21:                    //wait to complete and rotate left
+      base.turnLeft(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 22:                    //wait to complete and move fast to the enemy's mammoth
+      base.moveForward(150,highPhaseDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 23:                    //shoot half of the balls 
+      devices.startShooting();  
+      delay(1000);
+      devices.startSpinningBallTray();
+      base.moveBackward(40,ultraSlowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 24:        //wait to complete and rotate left
+      devices.stopShooting();
+      devices.stopSpinningBallTray();
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 25:             //wait to complete and move backward
+      base.moveBackward(35, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 26:
+      base.turnRight(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 27:             //wait to complete and move forward
+      ignoreSensors = true;
+      base.setSpecial();
+      base.moveForward(20, slowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+    break;
+    case 28:        //wait to complete and move backward
+      ignoreSensors = false;
+      base.resetSpecial();
+      base.moveBackward(55, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 29:
+      base.turnRight(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 30:             //wait to complete and move forward
+      base.moveForward(65, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 31:                    //shoot the other half of the balls 
+      devices.startShooting();  
+      delay(1000);
+      devices.startSpinningBallTray();
+      base.moveForward(40,ultraSlowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 32:        //wait to complete and throw net
+      devices.stopShooting();
+      devices.stopSpinningBallTray();
+      devices.ThrowNet();
+      state = STATE_STOP;
+      break;      
+    case STATE_NET:
+      devices.ThrowNet();
+      state = STATE_STOP;
+      break;
+    default:
+      state.doLoop();
+  }
+  base.doLoop();
+  checkForObstacle();
+  //testIfTimeUp();
 }
 
-void VisionBase::pause()
-{
-  leftMotor.pause();
-  rightMotor.pause();
+void testIfTimeUp()
+{    
+  if (ninetySecondsTimer > 10000L && !stoppedEverything)//90 sec
+  {
+    base.stopNow();
+    devices.stopShooting();
+    state = STATE_NET;
+    stoppedEverything = true;
+  }
 }
 
-void VisionBase::unpause()
+void checkForObstacle()
 {
-  leftMotor.unpause();
-  rightMotor.unpause();
+  if(base.obstructionDetected == true && ignoreSensors == false)   
+    base.pause();
+  else
+    base.unpause();
 }
 
-void VisionBase::stopNow()
+boolean baseStop()
 {
-  leftMotor.stopNow();
-  rightMotor.stopNow();
-}
-
-boolean VisionBase::frontDetected()
-{
-  return frontLeft.detect() /*|| frontFront.detect() */|| frontRight.detect();
-}
-
-boolean VisionBase::leftDetected()
-{
-  return left.detect();
-}
-
-boolean VisionBase::rightDetected()
-{
-  return right.detect();
-}
-
-boolean VisionBase::backDetected()
-{
-  return back.detect();
-}
-
-boolean VisionBase::isStopped()
-{
-  return leftMotor.isOff() && rightMotor.isOff();
-}
-
-void VisionBase::checkObstructions()
-{
-  obstructionDetected = false;
-  if (frontDetected() && directionMovement == FRONT)
-    obstructionDetected = true;
-  if (leftDetected() && directionMovement == LEFT)
-    obstructionDetected = true;
-  if (rightDetected() && directionMovement == RIGHT)
-    obstructionDetected = true;
-  if (backDetected() && directionMovement == BACK)
-    obstructionDetected = true;
-}
-
-void VisionBase::doLoop()
-{
-  leftMotor.doLoop();
-  rightMotor.doLoop();
+  return base.isStopped();
 }

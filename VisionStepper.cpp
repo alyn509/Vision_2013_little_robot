@@ -65,6 +65,8 @@ void VisionStepper::initPins(int enablePin, int directionPin, int stepPin)
   pinMode(stepPin, OUTPUT);
   stepPinState = LOW;
   digitalWrite(stepPin, stepPinState);
+  
+  special = false;
 }
 
 void VisionStepper::initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long pauseSpeedDelay, unsigned long delayBeforeTurnOff)
@@ -290,4 +292,14 @@ void VisionStepper::doRotationInAngle(float angle)
 {
   doSteps(angle * degreeStepRatio);
 }
+
+void VisionStepper::setSpecial()
+{
+  special = true;
+}
+void VisionStepper::resetSpecial()
+{
+  special = false;
+}
+
 

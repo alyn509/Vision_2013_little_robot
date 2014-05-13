@@ -31,12 +31,14 @@ class VisionBase {
     void unpause();
     void stopNow();
     void doLoop();
+    void setSpecial();
+    void resetSpecial();
     boolean isStopped();
   public:
     VisionStepper leftMotor, rightMotor;
-    VisionEncoder leftEncoder, rightEncoder;
-    VisionSensor backLeft, backBack, backRight, left, right, frontLeft, frontFront, frontRight;
+    VisionSensor back, left, right, frontLeft, frontFront, frontRight;
     int directionMovement;
+    boolean oppositeSide;
     boolean obstructionDetected;
 };
 

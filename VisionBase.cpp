@@ -14,13 +14,13 @@ void VisionBase::init()
   leftMotor.init();
   leftMotor.initDirectionForward(HIGH);
   leftMotor.initPins(leftMotorEnablePin, leftMotorDirectionPin, leftMotorStepPin);
-  leftMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay); 
+  leftMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay);
   leftMotor.initSizes(wheelDiameter, wheelRevolutionSteps,distanceBetweenWheels);
   
   rightMotor.init();
   rightMotor.initDirectionForward(LOW);
   rightMotor.initPins(rightMotorEnablePin, rightMotorDirectionPin, rightMotorStepPin);
-  rightMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay); 
+  rightMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay); 
   rightMotor.initSizes(wheelDiameter, wheelRevolutionSteps,distanceBetweenWheels);
   
   directionMovement = NONE;
@@ -30,8 +30,8 @@ void VisionBase::init()
 
 void VisionBase::setStartDelays(int startDelay)
 {
-  leftMotor.initDelays(startDelay, highPhaseDelay, maxSpeedDelay);
-  rightMotor.initDelays(startDelay, highPhaseDelay, maxSpeedDelay); 
+  leftMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay);
+  rightMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay);
 }
 
 void VisionBase::moveForward(float distance, int step_delay)

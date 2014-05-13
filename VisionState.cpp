@@ -26,8 +26,9 @@ void VisionState::waitFor(boolean (*functionToTestFor)(), int nextState)
 {
   if (nextState == STATE_NEXT)
     stateToSetAfterWait = *this + 1;
-  else
-    stateToSetAfterWait = nextState;
+  else if (nextState == STATE_LAST)
+    stateToSetAfterWait = *this - 1;
+  else stateToSetAfterWait = nextState;
   *this = STATE_WAIT_FOR;
   testFunction = functionToTestFor;
 }
