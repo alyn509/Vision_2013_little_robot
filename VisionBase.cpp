@@ -116,7 +116,7 @@ void VisionBase::unpause()
 
 boolean VisionBase::frontDetected()
 {
-  return frontLeft.detect() && frontFront.detect() && frontRight.detect();
+  return frontLeft.detect() && /*frontFront.detect() &&*/ frontRight.detect();
 }
 
 boolean VisionBase::leftDetected()
