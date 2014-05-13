@@ -137,9 +137,7 @@ void VisionBase::checkObstructions()
 
 void VisionBase::doLoop()
 {
-  leftEncoder.doLoop();
   leftMotor.doLoop();
-  rightEncoder.doLoop();
   rightMotor.doLoop();
 }
 

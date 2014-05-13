@@ -2,7 +2,6 @@
 #define VisionBase_h
 
 #include "Arduino.h"
-#include "VisionEncoder.h"
 #include "VisionStepper.h"
 #include "VisionSensor.h"
 #include "pins_little_robot.h"
@@ -37,7 +36,6 @@ class VisionBase {
     boolean isStopped();
   public:
     VisionStepper leftMotor, rightMotor;
-    VisionEncoder leftEncoder, rightEncoder;
     VisionSensor back, left, right, frontLeft, frontFront, frontRight;
     int directionMovement;
     boolean obstructionDetected, ignoreSensors;
