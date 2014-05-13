@@ -39,7 +39,7 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      base.moveForward(150,highPhaseDelay);
+      base.moveForward(50,highPhaseDelay);
       state.waitFor(baseStop, STATE_STOP);
       break;
     case 1:
@@ -172,7 +172,7 @@ void loop()
   }
   base.doLoop();
   checkForObstacle();
-  testIfTimeUp();
+  //testIfTimeUp();
 }
 
 void testIfTimeUp()
@@ -188,7 +188,7 @@ void testIfTimeUp()
 
 void checkForObstacle()
 {
-  if(base.obstructionDetected)   
+  if(base.obstructionDetected == true && base.ignoreSensors == false)   
     base.pause();
   else
     base.unpause();
