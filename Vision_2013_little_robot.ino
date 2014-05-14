@@ -26,13 +26,12 @@ int shotBalls = 0;
 
 void setup()
 { 
+  Serial.begin(9600);
   timeUpTimer = 0;
   
   base.init();
   devices.init();
   ignoreSensors = false;
-  //Serial.begin(9600);  
-  base.setStartDelays(defaultStartSpeedDelay);
   state.wait(100, 0);
 }
 
@@ -43,7 +42,7 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      base.moveForward(100,ultraSlowSpeedDelay);
+      base.moveForward(100,fastSpeedDelay);
       state.waitFor(baseStop, STATE_STOP);
       break;
     case 1:

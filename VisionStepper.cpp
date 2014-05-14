@@ -203,15 +203,15 @@ void VisionStepper::doLoop()
         stepSpeedCounter++;
       else if (speedState == SLOWING)
         stepSpeedCounter--;
-      currentDelay = computeSpeed();
+      currentDelay = startSpeedDelay * 10 / sqrt(2000 * stepSpeedCounter + 100);
       stepPinState = LOW;
       digitalWrite(stepPin, stepPinState);
-      stepState.waitMicros(currentDelay / 6, STEP_HIGH);
+      stepState.waitMicros(currentDelay, STEP_HIGH);
       break;
     case STEP_HIGH:
       stepPinState = HIGH;
       digitalWrite(stepPin, stepPinState);
-      stepState.waitMicros(currentDelay, STEP_LOW);
+      stepState.waitMicros(highPhaseDelay, STEP_LOW);
       break;
     default:
       stepState.doLoop();
@@ -220,7 +220,7 @@ void VisionStepper::doLoop()
 
 float VisionStepper::computeSpeed()
 {
-  return startSpeedDelay * 10 / sqrt(2000 * stepSpeedCounter + 100);
+  return startSpeedDelay * 10 / sqrt(1 * stepSpeedCounter + 100);
 }
 
 void VisionStepper::pause()

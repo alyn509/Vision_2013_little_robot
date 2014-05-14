@@ -28,13 +28,13 @@ void VisionBase::init()
   oppositeSide /*= digitalRead(colorYellowPin)*/ = false;
 }
 
-void VisionBase::setStartDelays(int startDelay)
+void VisionBase::setStartDelays(unsigned long startDelay)
 {
   leftMotor.initDelays(startDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay);
   rightMotor.initDelays(startDelay, highPhaseDelay, maxSpeedDelay, pauseSpeedDelay);
 }
 
-void VisionBase::moveForward(float distance, int step_delay)
+void VisionBase::moveForward(float distance, unsigned long step_delay)
 {       
   directionMovement = FRONT;
   leftMotor.setTargetDelay(step_delay);         
@@ -45,7 +45,7 @@ void VisionBase::moveForward(float distance, int step_delay)
   rightMotor.doDistanceInCm(distance);
 }
 
-void VisionBase::moveBackward(float distance, int step_delay)
+void VisionBase::moveBackward(float distance, unsigned long step_delay)
 {    
   directionMovement = BACK;
   leftMotor.setTargetDelay(step_delay);         

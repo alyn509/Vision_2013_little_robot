@@ -27,7 +27,7 @@ class VisionState {
     int state, stateToSetAfterWait;
     unsigned long timeToWait, timeToWaitInMicros;
     elapsedMillis time;
-    elapsedMicros timeInMicros;
+    elapsedMicros timeMicros;
     boolean (*testFunction)();
 };
 

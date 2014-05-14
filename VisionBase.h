@@ -17,9 +17,9 @@
 class VisionBase {
   public:
     void init();
-    void setStartDelays(int startDelay);
-    void moveForward(float distance, int step_delay);
-    void moveBackward(float distance, int step_delay);
+    void setStartDelays(unsigned long startDelay);
+    void moveForward(float distance, unsigned long step_delay);
+    void moveBackward(float distance, unsigned long step_delay);
     boolean frontDetected();
     boolean leftDetected();
     boolean rightDetected();
