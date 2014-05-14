@@ -8,19 +8,13 @@
 #define STARTING 3
 
 elapsedMillis waitTime;
-
-//boolean FirstBallFlag = true;
      
 const int delayActions = 4000;
 const int delayBallShotsTogglesHigh = 10;
 const int delayBallShotsTogglesLow = 40;
-//const int ballToggleTimes = 9999999;
-//int toggleCounter;
     
 void sensors_and_devices::init()
 { 
-  //FirstBallFlag = true;
-  //toggleCounter = 0;
   pinMode(PrepareBallPin, OUTPUT);
   digitalWrite(PrepareBallPin, LOW);
   
@@ -34,17 +28,14 @@ void sensors_and_devices::init()
 
 void sensors_and_devices::shootBall()
 {
-  //if(toggleCounter<=ballToggleTimes){
     if(waitTime>delayBallShotsTogglesHigh){
       digitalWrite(ShootBallPin, HIGH);
     }
     if(waitTime>(delayBallShotsTogglesHigh + delayBallShotsTogglesLow))
     {
       digitalWrite(ShootBallPin, LOW);
-      //toggleCounter++;
       waitTime = 0;
     }
-  //}
 }
 
 void sensors_and_devices::startShooting()

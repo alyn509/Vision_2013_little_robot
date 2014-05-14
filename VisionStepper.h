@@ -44,7 +44,6 @@ class VisionStepper {
     boolean foundTargetSpeed, raiseSpeed, pauseWhenFound;
     elapsedMicros stepTimer;
     elapsedMillis stopTimer, pauseTurnOff;
-    boolean slow;
     
     float stepCmRatio; // steps for a cm
     float degreeStepRatio; //steps for a degree turn;

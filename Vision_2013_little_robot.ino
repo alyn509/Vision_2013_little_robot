@@ -53,9 +53,13 @@ void loop()
   {
     
       //******************************************CLASSIC TACTIC**************************************************//
-    case CLASSIC_TACTIC:     //move forward
+    case CLASSIC_TACTIC:     //move forward    
+      base.moveForward(80,fastSpeedDelay);//57,mediumSpeedDelay);      
+      waitForMotorsStop(state + 1);
        break;
     case 1:
+        base.turnLeft(180);  
+      waitForMotorsStop(state - 1);
       break;
     case 2:                    //wait to complete and rotate left
       waitForMotorsStop(STATE_STOP);

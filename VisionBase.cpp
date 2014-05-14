@@ -24,6 +24,7 @@ void VisionBase::init()
   
   directionMovement = NONE;
   obstructionDetected = false;
+  oppositeSide = false;
 }
 
 void VisionBase::doLoop()
@@ -59,8 +60,16 @@ void VisionBase::turnLeft(int angle)
   directionMovement = LEFT;
   leftMotor.setTargetDelay(2000);         
   rightMotor.setTargetDelay(2000);
-  leftMotor.setDirectionBackward();
-  rightMotor.setDirectionForward();
+  if(oppositeSide)
+  {
+    leftMotor.setDirectionBackward();
+    rightMotor.setDirectionForward();
+  }
+  else
+  {    
+    leftMotor.setDirectionForward();
+    rightMotor.setDirectionBackward();
+  }
   leftMotor.doRotationInAngle(angle);
   rightMotor.doRotationInAngle(angle); 
 }
@@ -70,8 +79,16 @@ void VisionBase::turnRight(int angle)
   directionMovement = RIGHT;
   leftMotor.setTargetDelay(2000);         
   rightMotor.setTargetDelay(2000);
-  leftMotor.setDirectionForward();
-  rightMotor.setDirectionBackward();
+  if(oppositeSide)
+  {
+    leftMotor.setDirectionForward();
+    rightMotor.setDirectionBackward();
+  }
+  else
+  {    
+    leftMotor.setDirectionBackward();
+    rightMotor.setDirectionForward();
+  }
   leftMotor.doRotationInAngle(angle);
   rightMotor.doRotationInAngle(angle);
 }

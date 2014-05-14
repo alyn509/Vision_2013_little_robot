@@ -1,7 +1,7 @@
 #ifndef little_robot_constants_h
 #define little_robot_constants_h
 
-const unsigned long defaultStartSpeedDelay = 100000;
+const unsigned long defaultStartSpeedDelay = 100000L;
 const unsigned long highPhaseDelay = 100;
 const unsigned long maxSpeedDelay = 400;
 

@@ -19,7 +19,6 @@ void VisionStepper::init()
   special = false;
   pauseWhenFound = false;
   forwardDirection = HIGH;
-  slow = false;
 }
 
 void VisionStepper::setSpecial()
@@ -118,7 +117,8 @@ void VisionStepper::doLoop()
             raiseSpeed = false;
           }
         }
-        currentDelay = startSpeedDelay * 10 / sqrt(2000 * (stepSpeedCounter - slow * 1) + 100);
+        currentDelay = startSpeedDelay * 10 / sqrt(2000 * stepSpeedCounter + 100);
+        //Serial.println(currentDelay);
         if (!foundTargetSpeed)
         {
           if ((!raiseSpeed && currentDelay > targetDelay) ||
@@ -259,15 +259,5 @@ void VisionStepper::doDistanceInCm(float distance)
 void VisionStepper::doRotationInAngle(float angle)
 {
   doSteps(angle * degreeStepRatio);    // useless for arm motors
-}
-
-void VisionStepper::slowDown()
-{
-  slow = true;
-}
-
-void VisionStepper::speedUp()
-{
-  slow = false;
 }
 
