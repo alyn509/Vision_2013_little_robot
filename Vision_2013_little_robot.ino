@@ -26,7 +26,7 @@ int shotBalls = 0;
 
 void setup()
 { 
-  Serial.begin(115200);
+  //Serial.begin(115200);
   timeUpTimer = 0;
   base.init();
   devices.init();
@@ -41,7 +41,7 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      base.moveForward(100,fastSpeedDelay);
+      base.moveForward(90,fastSpeedDelay);
       state.waitFor(baseStop, STATE_STOP);
       break;
     case 1:

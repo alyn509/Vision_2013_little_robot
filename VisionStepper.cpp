@@ -69,12 +69,14 @@ void VisionStepper::initPins(int enablePin, int directionPin, int stepPin)
   special = false;
 }
 
-void VisionStepper::initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long pauseSpeedDelay, unsigned long delayBeforeTurnOff)
+void VisionStepper::initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long pauseSpeedDelay, unsigned long delayBeforeTurnOff, float stepSpeedCounterAcceleration, float stepSpeedCounterSlowing)
 {
   this->startSpeedDelay = startSpeedDelay;
   this->highPhaseDelay = highPhaseDelay;
   this->pauseSpeedDelay = pauseSpeedDelay;
   this->delayBeforeTurnOff = delayBeforeTurnOff;
+  this->stepSpeedCounterAcceleration = stepSpeedCounterAcceleration;
+  this->stepSpeedCounterSlowing = stepSpeedCounterSlowing;
   currentDelay = startSpeedDelay;
 }
 
@@ -101,7 +103,7 @@ void VisionStepper::doLoop()
       enableState = TURN_ON;
       break;
     case RUNNING:
-      if (stepsRemaining <= stepSpeedCounter)
+      if (stepsRemaining <= stepSpeedCounter / stepSpeedCounterSlowing)
         motorState = STOPPING_SLOWING;
       break;
     case PAUSING_SLOWING:
@@ -200,13 +202,14 @@ void VisionStepper::doLoop()
       stepsMadeSoFar++;
       stepsRemaining--;
       if (speedState == ACCELERATING)
-        stepSpeedCounter++;
+        stepSpeedCounter += stepSpeedCounterAcceleration;
       else if (speedState == SLOWING)
-        stepSpeedCounter--;
-      currentDelay = startSpeedDelay * 10 / sqrt(4000 * stepSpeedCounter + 100);
-      //Serial.print(targetDelay);
-      //Serial.print(" ");
-      //Serial.println(currentDelay);
+      {
+        stepSpeedCounter -= stepSpeedCounterSlowing;
+        if (stepSpeedCounter < 0)
+            stepSpeedCounter = 0;
+      }
+      currentDelay = startSpeedDelay / sqrt(stepSpeedCounter + 1);
       stepPinState = LOW;
       digitalWrite(stepPin, stepPinState);
       stepState.waitMicros(currentDelay, STEP_HIGH);
