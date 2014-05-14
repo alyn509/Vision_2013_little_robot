@@ -54,13 +54,8 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
- 
-      state = 1;
-      break;
+       break;
     case 1:
-      //Serial.println(devices.detectColor());
-     /* if (motorLeft.stepsMadeSoFar / motorLeft.stepCmRatio > 10)*/
-         state = 2;
       break;
     case 2:                    //wait to complete and rotate left
       waitForMotorsStop(STATE_STOP);
