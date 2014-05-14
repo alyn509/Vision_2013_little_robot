@@ -167,19 +167,19 @@ void VisionStepper::doLoop()
   switch (speedState)
   {
     case ACCELERATING:
-      if (currentDelay < targetDelay)
+      if (currentDelay <= targetDelay)
         speedState = CONSTANT;
       break;
     case SLOWING:
-      if (currentDelay > targetDelay)
+      if (currentDelay >= targetDelay)
         speedState = CONSTANT;
       break;
     case CONSTANT:
       break;
     case UNDETERMINED:
-      if (currentDelay > targetDelay)
+      if (currentDelay < targetDelay)
         speedState = SLOWING;
-      else if (currentDelay < targetDelay)
+      else if (currentDelay > targetDelay)
         speedState = ACCELERATING;
       else
         speedState = CONSTANT;
@@ -203,7 +203,10 @@ void VisionStepper::doLoop()
         stepSpeedCounter++;
       else if (speedState == SLOWING)
         stepSpeedCounter--;
-      currentDelay = startSpeedDelay * 10 / sqrt(2000 * stepSpeedCounter + 100);
+      currentDelay = startSpeedDelay * 10 / sqrt(4000 * stepSpeedCounter + 100);
+      //Serial.print(targetDelay);
+      //Serial.print(" ");
+      //Serial.println(currentDelay);
       stepPinState = LOW;
       digitalWrite(stepPin, stepPinState);
       stepState.waitMicros(currentDelay, STEP_HIGH);
