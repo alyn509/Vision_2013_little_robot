@@ -69,15 +69,28 @@ void VisionStepper::initPins(int enablePin, int directionPin, int stepPin)
   special = false;
 }
 
-void VisionStepper::initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long pauseSpeedDelay, unsigned long delayBeforeTurnOff, float stepSpeedCounterAcceleration, float stepSpeedCounterSlowing)
+void VisionStepper::initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long pauseSpeedDelay, unsigned long delayBeforeTurnOff)
 {
   this->startSpeedDelay = startSpeedDelay;
   this->highPhaseDelay = highPhaseDelay;
   this->pauseSpeedDelay = pauseSpeedDelay;
   this->delayBeforeTurnOff = delayBeforeTurnOff;
-  this->stepSpeedCounterAcceleration = stepSpeedCounterAcceleration;
-  this->stepSpeedCounterSlowing = stepSpeedCounterSlowing;
   currentDelay = startSpeedDelay;
+}
+
+void VisionStepper::setTacticDelays(int tactic)
+{
+  switch(tactic)
+  {
+    case CLASSIC_TACTIC:  
+      stepSpeedCounterAcceleration = 6;
+      stepSpeedCounterSlowing = 5;
+      break;
+    case AGGRESSIVE_TACTIC:  
+      stepSpeedCounterAcceleration = 80;
+      stepSpeedCounterSlowing = 40;
+      break;
+  }
 }
 
 void VisionStepper::initSizes(float wheelDiameter, int wheelRevolutionSteps, float distanceBetweenWheels)

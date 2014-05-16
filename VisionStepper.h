@@ -5,12 +5,17 @@
   #include <elapsedMillis.h>
   #include "VisionState.h"
   
+  #define CLASSIC_TACTIC 0
+  #define AGGRESSIVE_TACTIC 20
+  #define FRIENDLY_TACTIC 40
+  
   class VisionStepper {
     public:
       void init();
       void initPins(int enablePin, int directionPin, int stepPin);
       void initDirectionForward(boolean forward);
-      void initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long maxSpeedDelay, unsigned long pauseSpeedDelay, float stepSpeedCounterAcceleration, float stepSpeedCounterSlowing);
+      void initDelays(unsigned long startSpeedDelay, unsigned long highPhaseDelay, unsigned long maxSpeedDelay, unsigned long pauseSpeedDelay);
+      void setTacticDelays(int tactic);
       void initSizes(float wheelDiameter, int wheelRevolutionSteps, float distanceBetweenWheels);
       void initStepCmRatio(float stepCmRatio);
       void doLoop();

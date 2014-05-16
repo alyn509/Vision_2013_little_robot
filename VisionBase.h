@@ -18,6 +18,7 @@ class VisionBase {
   public:
     void init();
     void setStartDelays(unsigned long startDelay);
+    void setTacticDelays(int tactic);
     void moveForward(float distance, unsigned long step_delay);
     void moveBackward(float distance, unsigned long step_delay);
     boolean frontDetected();
