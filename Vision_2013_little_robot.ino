@@ -41,22 +41,43 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      base.moveForward(52,fastSpeedDelay);
+      base.moveForward(65,fastSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 1:                    //shoot balls 
       devices.startShooting();  
       delay(1000);
       devices.startSpinningBallTray();
-      base.moveForward(35,ultraSlowSpeedDelay * 100);
-      state.waitFor(baseStop, STATE_NEXT);
+      base.turnLeft(15);
+      state.waitMicros(100, STATE_NEXT);
       break;
     case 2:        //wait to complete and rotate left
+      base.turnRight(5);
+      state.waitMicros(100, STATE_NEXT);
+      break;
+    case 3:        //wait to complete and rotate left
+      base.turnRight(5);
+      state.waitMicros(100, STATE_NEXT);
+      break;
+    case 4:        //wait to complete and rotate left
+      base.turnRight(5);
+      state.waitMicros(100, STATE_NEXT);
+      break;
+    case 5:        //wait to complete and rotate left
+      base.turnRight(5);
+      state.waitMicros(100, STATE_NEXT);
+      break;
+    case 6:        //wait to complete and rotate left
+      base.turnRight(5);
+      state.waitMicros(100, STATE_NEXT);
+      break;
+    case 7:        //wait to complete and rotate left
       devices.stopShooting();
       devices.stopSpinningBallTray();
       base.moveForward(60, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
+    /*
     case 3:             //wait to complete and move forward
       base.turnLeft(90);
       state.waitFor(baseStop, STATE_NEXT);
@@ -94,7 +115,7 @@ void loop()
       state = STATE_STOP;
       break;
       
-      //******************************************AGGRESSIVE TACTIC**************************************************//
+      //******************************************AGGRESSIVE TACTIC**************************************************/
     case AGGRESSIVE_TACTIC:
       base.moveForward(230,highPhaseDelay);
       state.waitFor(baseStop, STATE_NEXT);
