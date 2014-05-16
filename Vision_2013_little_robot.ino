@@ -41,20 +41,20 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      base.moveForward(50,fastSpeedDelay);
+      base.moveForward(52,fastSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 1:                    //shoot balls 
       devices.startShooting();  
       delay(1000);
       devices.startSpinningBallTray();
-      base.moveForward(25,ultraSlowSpeedDelay);
+      base.moveForward(35,ultraSlowSpeedDelay * 100);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 2:        //wait to complete and rotate left
       devices.stopShooting();
       devices.stopSpinningBallTray();
-      base.moveForward(50, mediumSpeedDelay);
+      base.moveForward(60, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 3:             //wait to complete and move forward
