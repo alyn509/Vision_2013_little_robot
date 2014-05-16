@@ -25,7 +25,7 @@ void VisionBase::init()
   
   directionMovement = NONE;
   obstructionDetected = false;
-  oppositeSide /*= digitalRead(colorYellowPin)*/ = false;
+  oppositeSide /*= digitalRead(colorYellowPin)*/ = true;
 }
 
 void VisionBase::setTacticDelays(int tactic)

@@ -40,7 +40,7 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      freshStart(45,fastSpeedDelay);
+      classicStart(45,fastSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 1:                    //shoot balls 
@@ -87,7 +87,7 @@ void loop()
       
       //******************************************AGGRESSIVE TACTIC**************************************************/
     case AGGRESSIVE_TACTIC:
-      base.moveForward(230,highPhaseDelay);
+      classicStart(223,highPhaseDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 21:                    //shoot half of the balls     
@@ -104,7 +104,7 @@ void loop()
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 23:             //wait to complete and move backward
-      base.moveBackward(65, mediumSpeedDelay);
+      lessBackward(55, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 24:
@@ -112,7 +112,7 @@ void loop()
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 25:             //wait to complete and move forward
-      strictForward(50,mediumSpeedDelay);
+      strictForward(55,mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
     break;
     case 26:             //wait to complete and move forward
@@ -128,7 +128,7 @@ void loop()
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 29:             //wait to complete and move forward
-      base.moveBackward(67, mediumSpeedDelay);
+      extraBackward(67, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 30:                    //shoot the other half of the balls 
@@ -198,12 +198,19 @@ void strictBackward(int distance)
   else
     base.moveForward(distance, mediumSpeedDelay);
 }
-void freshStart(int distance, unsigned long startDelay)    // extra distance for the normal side
+void classicStart(int distance, unsigned long startDelay)    // extra distance for the normal side
 {
   if(!base.oppositeSide)
     base.moveForward(distance + 7, startDelay);
   else
     base.moveForward(distance, startDelay);
+}
+void aggroStart(int distance, unsigned long startDelay)    // extra distance for the normal side
+{
+  if(!base.oppositeSide)
+    base.moveForward(distance, startDelay);
+  else
+    base.moveForward(distance + 7, startDelay);
 }
 void extraForward(int distance, unsigned long startDelay)    // extra distance for the opposite side
 {
@@ -211,4 +218,18 @@ void extraForward(int distance, unsigned long startDelay)    // extra distance f
     base.moveForward(distance, startDelay);
   else
     base.moveForward(distance + 7, startDelay);
+}
+void extraBackward(int distance, unsigned long startDelay)    // extra distance for the opposite side
+{
+  if(!base.oppositeSide)
+    base.moveBackward(distance, startDelay);
+  else
+    base.moveBackward(distance + 7, startDelay);
+}
+void lessBackward(int distance, unsigned long startDelay)    // extra distance for the opposite side
+{
+  if(!base.oppositeSide)
+    base.moveBackward(distance + 9, startDelay);
+  else
+    base.moveBackward(distance, startDelay);
 }
