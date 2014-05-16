@@ -16,7 +16,7 @@ void VisionSensor::setAsPullup()
 
 boolean VisionSensor::detect()
 {
-  return enabled && (digitalRead(sensorPin) ^ pullup);
+  return false;//enabled && (digitalRead(sensorPin) ^ pullup);
 }
 
 void VisionSensor::enable()

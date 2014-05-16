@@ -59,6 +59,8 @@ void VisionBase::moveBackward(float distance, unsigned long step_delay)
 void VisionBase::turnLeft(int angle)
 {
   directionMovement = LEFT;
+  leftMotor.setTargetDelay(5000);         
+  rightMotor.setTargetDelay(5000);
   if(!oppositeSide)
   {
     leftMotor.setDirectionBackward();
@@ -76,6 +78,8 @@ void VisionBase::turnLeft(int angle)
 void VisionBase::turnRight(int angle)
 {  
   directionMovement = RIGHT;
+  leftMotor.setTargetDelay(5000);         
+  rightMotor.setTargetDelay(5000);
   if(!oppositeSide)
   {
     leftMotor.setDirectionForward();

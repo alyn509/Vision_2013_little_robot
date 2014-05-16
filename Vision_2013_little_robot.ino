@@ -9,11 +9,11 @@
 #include "pins_little_robot.h"
 #include "little_robot_constants.h"
 
-#define NINETYSECONDS 88000L
+#define NINETYSECONDS 3000l//88000L
 
 #define CLASSIC_TACTIC 0
-#define FRIENDLY_TACTIC 20
-#define AGGRESSIVE_TACTIC 40
+#define AGGRESSIVE_TACTIC 20
+#define FRIENDLY_TACTIC 40
 
 VisionBase base;
 VisionDevices devices;
@@ -31,7 +31,7 @@ void setup()
   base.init();
   devices.init();
   ignoreSensors = false;
-  state.wait(100, 0);
+  state.wait(100, CLASSIC_TACTIC);
 }
 
 void loop()
@@ -41,59 +41,54 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      base.moveForward(90,fastSpeedDelay);
-      state.waitFor(baseStop, STATE_STOP);
-      break;
-    case 1:
-      base.turnLeft(180);
-      state.waitFor(baseStop, STATE_LAST);
-      break;
-    case 2:                    //wait to complete and rotate left
-      base.turnLeft(90);
+      base.moveForward(50,fastSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 3:                    //wait to complete and move forward   
-      base.moveForward(40,mediumSpeedDelay);
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 4:                    //shoot balls 
+    case 1:                    //shoot balls 
       devices.startShooting();  
       delay(1000);
       devices.startSpinningBallTray();
-      base.moveForward(78,ultraSlowSpeedDelay);
+      base.moveForward(25,ultraSlowSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 5:        //wait to complete and rotate left
+    case 2:        //wait to complete and rotate left
       devices.stopShooting();
       devices.stopSpinningBallTray();
+      base.moveForward(50, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 3:             //wait to complete and move forward
       base.turnLeft(90);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 6:             //wait to complete and move forward
-      base.moveForward(35, mediumSpeedDelay);
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 7:             //wait to complete and move forward
+    case 4:             //wait to complete and move forward
       ignoreSensors = true;
       base.setSpecial();
-      base.moveForward(20, slowSpeedDelay);
+      base.moveForward(60, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
     break;
-    case 8:        //wait to complete and move backward
+    case 5:        //wait to complete and move backward
       ignoreSensors = false;
       base.resetSpecial();
       base.moveBackward(55, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 9:
+    case 6:
       base.turnRight(90);
       state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 10:   
-      base.moveBackward(28,mediumSpeedDelay);
+      break;;
+    case 7:
+      base.moveBackward(30,mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 11:
+    case 8:       //shoot balls 
+      devices.startShooting();  
+      delay(1000);
+      devices.startSpinningBallTray();
+      base.moveBackward(30,ultraSlowSpeedDelay * 4);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 9:
       delay(5000);
       devices.ThrowNet();
       state = STATE_STOP;
@@ -101,65 +96,69 @@ void loop()
       
       //******************************************AGGRESSIVE TACTIC**************************************************//
     case AGGRESSIVE_TACTIC:
-      base.moveForward(45,mediumSpeedDelay);
+      base.moveForward(230,highPhaseDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 21:                    //wait to complete and rotate left
+    case 21:
+      base.turnRight(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 22:
+      base.moveForward(10,ultraSlowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 23:
       base.turnLeft(90);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 22:                    //wait to complete and move fast to the enemy's mammoth
-      base.moveForward(150,highPhaseDelay);
+    case 24:                    //shoot half of the balls 
+      devices.startShooting();  
+      delay(1000);
+      devices.startSpinningBallTray();
+      base.moveBackward(35,ultraSlowSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 23:                    //shoot half of the balls 
+    case 25:        //wait to complete and rotate left
+      devices.stopShooting();
+      devices.stopSpinningBallTray();
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 26:             //wait to complete and move backward
+      base.moveBackward(50, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 27:
+      base.turnLeft(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 28:             //wait to complete and move forward
+      ignoreSensors = true;
+      base.setSpecial();
+      base.moveForward(70, slowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+    break;
+    case 29:        //wait to complete and move backward
+      ignoreSensors = false;
+      base.resetSpecial();
+      base.moveBackward(60, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 30:
+      base.turnRight(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 31:             //wait to complete and move forward
+      base.moveBackward(65, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 32:                    //shoot the other half of the balls 
       devices.startShooting();  
       delay(1000);
       devices.startSpinningBallTray();
       base.moveBackward(40,ultraSlowSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 24:        //wait to complete and rotate left
-      devices.stopShooting();
-      devices.stopSpinningBallTray();
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 25:             //wait to complete and move backward
-      base.moveBackward(35, mediumSpeedDelay);
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 26:
-      base.turnRight(90);
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 27:             //wait to complete and move forward
-      ignoreSensors = true;
-      base.setSpecial();
-      base.moveForward(20, slowSpeedDelay);
-      state.waitFor(baseStop, STATE_NEXT);
-    break;
-    case 28:        //wait to complete and move backward
-      ignoreSensors = false;
-      base.resetSpecial();
-      base.moveBackward(55, mediumSpeedDelay);
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 29:
-      base.turnRight(90);
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 30:             //wait to complete and move forward
-      base.moveForward(65, mediumSpeedDelay);
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 31:                    //shoot the other half of the balls 
-      devices.startShooting();  
-      delay(1000);
-      devices.startSpinningBallTray();
-      base.moveForward(40,ultraSlowSpeedDelay);
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 32:        //wait to complete and throw net
+    case 33:        //wait to complete and throw net
       devices.stopShooting();
       devices.stopSpinningBallTray();
       devices.ThrowNet();
