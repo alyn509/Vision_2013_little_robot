@@ -1,3 +1,4 @@
+#include <Servo.h>
 #include <elapsedMillis.h>
 #include <Stepper.h>
 #include <LiquidCrystal.h>
@@ -26,12 +27,35 @@ int shotBalls = 0;
 
 void setup()
 { 
-  //Serial.begin(115200);
+  Serial.begin(9600);
+  Servo test;
+  test.attach(33);
+  Serial.println(15);
+  test.write(15);
+  delay(2000);
+  for (int i=20; i<=180; i+=15)
+  {
+    if (i%2==0)
+    {
+    Serial.println(i);
+    test.write(i);
+    delay(3000);
+    }
+    else
+    {
+    Serial.println(15);
+    test.write(15);
+    delay(3000);
+    }
+  }
+  Serial.println(15);
+  test.write(15);
+  
   timeUpTimer = 0;
   base.init();
   devices.init();
   ignoreSensors = false;
-  state.wait(100, CLASSIC_TACTIC);
+  state.wait(1000, CLASSIC_TACTIC);
 }
 
 void loop()
@@ -41,42 +65,30 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //move forward
-      base.moveForward(52,fastSpeedDelay);
+      base.moveForward(30,fastSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 1:                    //shoot balls 
-      devices.startShooting();  
-      delay(1000);
-      devices.startSpinningBallTray();
-      base.moveForward(35,ultraSlowSpeedDelay * 100);
-      state.waitFor(baseStop, STATE_NEXT);
+      state.wait(500, STATE_NEXT);
       break;
     case 2:        //wait to complete and rotate left
-      devices.stopShooting();
-      devices.stopSpinningBallTray();
-      base.moveForward(60, mediumSpeedDelay);
+      base.moveBackward(30,fastSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 3:             //wait to complete and move forward
-      base.turnLeft(90);
-      state.waitFor(baseStop, STATE_NEXT);
+      state.wait(500, STATE_NEXT);
       break;
     case 4:             //wait to complete and move forward
-      ignoreSensors = true;
-      base.setSpecial();
-      base.moveForward(60, mediumSpeedDelay);
+      base.turnLeft(180);
       state.waitFor(baseStop, STATE_NEXT);
     break;
     case 5:        //wait to complete and move backward
-      ignoreSensors = false;
-      base.resetSpecial();
-      base.moveBackward(55, mediumSpeedDelay);
-      state.waitFor(baseStop, STATE_NEXT);
+      state.wait(500, STATE_NEXT);
       break;
     case 6:
-      base.turnRight(90);
-      state.waitFor(baseStop, STATE_NEXT);
-      break;;
+      base.turnRight(180);
+      state.waitFor(baseStop, STATE_STOP);
+      break;
     case 7:
       base.moveBackward(30,mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);

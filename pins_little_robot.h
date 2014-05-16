@@ -26,7 +26,7 @@ const int rightMotorStepPin = 12;
 const int rightMotorDirectionPin = 6;
 
 const int colorRedPin = 31;
-const int colorYellowPin = 33;
+//const int colorYellowPin = 33;
 
 #endif
 
