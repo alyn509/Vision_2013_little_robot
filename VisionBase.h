@@ -22,8 +22,8 @@ class VisionBase {
     void moveForward(float distance, unsigned long step_delay);
     void moveBackward(float distance, unsigned long step_delay);
     boolean frontDetected();
-    boolean leftDetected();
-    boolean rightDetected();
+    //boolean leftDetected();
+    //boolean rightDetected();
     boolean backDetected();
     void checkObstructions();
     void turnLeft(int angle);

@@ -220,7 +220,7 @@ void VisionStepper::doLoop()
       {
         stepSpeedCounter -= stepSpeedCounterSlowing;
         if (stepSpeedCounter < 0)
-            stepSpeedCounter = 0;
+            stepSpeedCounter = 0;|
       }
       currentDelay = startSpeedDelay / sqrt(stepSpeedCounter + 1);
       stepPinState = LOW;

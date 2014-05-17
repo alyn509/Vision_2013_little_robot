@@ -25,7 +25,8 @@ void VisionBase::init()
   
   directionMovement = NONE;
   obstructionDetected = false;
-  oppositeSide /*= digitalRead(colorYellowPin)*/ = true;
+  pinMode(colorRedPin, INPUT);
+  oppositeSide = (digitalRead(colorRedPin) == HIGH);// = false;
 }
 
 void VisionBase::setTacticDelays(int tactic)
@@ -128,9 +129,9 @@ void VisionBase::unpause()
 
 boolean VisionBase::frontDetected()
 {
-  return frontLeft.detect() || /*frontFront.detect() &&*/ frontRight.detect();
+  return frontLeft.detect() && frontRight.detect();
 }
-
+/*
 boolean VisionBase::leftDetected()
 {
   return left.detect();
@@ -140,7 +141,7 @@ boolean VisionBase::rightDetected()
 {
   return right.detect();
 }
-
+*/
 boolean VisionBase::backDetected()
 {
   return back.detect();
@@ -154,13 +155,13 @@ boolean VisionBase::isStopped()
 void VisionBase::checkObstructions()
 {
   obstructionDetected = false;
-  if (frontDetected() && directionMovement == FRONT)
+  if ((frontDetected() && directionMovement == FRONT && !oppositeSide) || (frontDetected() && directionMovement == BACK && oppositeSide))
     obstructionDetected = true;
-  if (leftDetected() && (directionMovement == LEFT || directionMovement == RIGHT))
+  /*if (leftDetected() && (directionMovement == LEFT || directionMovement == RIGHT))
     obstructionDetected = true;
   if (rightDetected() && (directionMovement == LEFT || directionMovement == RIGHT))
-    obstructionDetected = true;
-  if (backDetected() && directionMovement == BACK)
+    obstructionDetected = true;*/
+  if ((backDetected() && directionMovement == BACK && !oppositeSide) || (backDetected() && directionMovement == FRONT && oppositeSide))
     obstructionDetected = true;
 }
 

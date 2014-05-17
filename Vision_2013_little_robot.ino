@@ -23,8 +23,8 @@ int tactic;
 
 void setup()
 { 
-  //Serial.begin(115200);
-  tactic = AGGRESSIVE_TACTIC;
+  Serial.begin(115200);
+  tactic = CLASSIC_TACTIC;
   base.setTacticDelays(tactic);
   timeUpTimer = 0;
   base.init();
@@ -34,63 +34,64 @@ void setup()
 }
 
 void loop()
-{  
+{ 
+  Serial.println(digitalRead(colorRedPin)); 
   switch (state)
   {
     
       //******************************************CLASSIC TACTIC**************************************************//
-    case CLASSIC_TACTIC:     //move forward
+    case CLASSIC_TACTIC:     //      go to the mammoth
       classicStart(45,fastSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 1:                    //shoot balls 
+    case 1:                    //      shoot all balls 
       devices.startShooting();  
       delay(1000);
       devices.startSpinningBallTray();
       base.moveForward(35,ultraSlowSpeedDelay * 125);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 2:        //wait to complete and rotate left
+    case 2:        //      stop shooting and to the edge of the black line
       devices.stopShooting();
       extraForward(35, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 3:             //wait to complete and move forward
+    case 3:             //      turn left
       base.turnLeft(90);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 4:             //wait to complete and move forward
+    case 4:             //      move to the wall
       strictForward(40,mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
     break;
-    case 5:             //wait to complete and move forward
+    case 5:             //      hit the wall
       strictForward(20,ultraSlowSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
     break;
-    case 6:        //wait to complete and move backward
+    case 6:        //       get back from the wall
       strictBackward(55);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 7:
+    case 7:        //      turn right
       base.turnRight(90);
       state.waitFor(baseStop, STATE_NEXT);
       break;;
-    case 8:
+    case 8:        //      return to the mammoth
       base.moveBackward(35,mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 9:
+    case 9:        //      throw the net over the mammoth
       delay(5000);
       devices.ThrowNet();
       state = STATE_STOP;
       break;
       
       //******************************************AGGRESSIVE TACTIC**************************************************/
-    case AGGRESSIVE_TACTIC:
+    case AGGRESSIVE_TACTIC:        //      go at fast speed at the enemy's mammoth 
       classicStart(223,highPhaseDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 21:                    //shoot half of the balls     
+    case 21:        //      shoot half of the balls     
       base.setTacticDelays(CLASSIC_TACTIC);
       devices.startShooting();  
       delay(1000);
@@ -98,53 +99,50 @@ void loop()
       base.moveBackward(10,ultraSlowSpeedDelay * 110);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 22:        //wait to complete and rotate left
+    case 22:        //      stop shooting and go to the edge of the black line
       devices.stopShooting();
       devices.stopSpinningBallTray();
-      state.waitFor(baseStop, STATE_NEXT);
-      break;
-    case 23:             //wait to complete and move backward
       lessBackward(55, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 24:
+    case 23:        //      turn left (right in case you go backwards)
       base.turnLeft(90);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 25:             //wait to complete and move forward
+    case 24:        //      go to the wall
       strictForward(55,mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
     break;
-    case 26:             //wait to complete and move forward
+    case 25:        //      hit the wall
       strictForward(5,ultraSlowSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
     break;
-    case 27:        //wait to complete and move backward
+    case 26:        //      go back to the edge of the black line
       strictBackward(55);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 28:
+    case 27:        //      turn right (left in case you move backwards)
       base.turnRight(90);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 29:             //wait to complete and move forward
+    case 28:        //      move backwards to your own mammoth
       extraBackward(67, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 30:                    //shoot the other half of the balls 
+    case 29:        //      shoot the other half of the balls 
       devices.startShooting();  
       delay(1000);
       devices.startSpinningBallTray();
       base.moveBackward(20,ultraSlowSpeedDelay * 110);
       state.waitFor(baseStop, STATE_NEXT);
       break;
-    case 31:        //wait to complete and throw net-
+    case 30:        //      stop shooting and move forward
       devices.stopShooting();
       devices.stopSpinningBallTray();
       base.moveForward(25,highPhaseDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;      
-    case 32:        //wait to complete and throw net
+      case 31:        //     throw the net
       devices.ThrowNet();
       state = STATE_STOP;
       break;      
@@ -158,13 +156,20 @@ void loop()
   base.checkObstructions();
   checkForObstacle();
   base.doLoop();
-  //testIfTimeUp();
+  testIfTimeUp();
 }
 
+void testIfTimeUp()
+{
+  if(timeUpTimer == NINETYSECONDS)
+    timeIsUpStopEverything();
+}
 
 void timeIsUpStopEverything()
 {
   base.stopNow();
+  devices.stopShooting();
+  devices.stopSpinningBallTray();
   state = STATE_STOP;
 }
 
