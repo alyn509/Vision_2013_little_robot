@@ -31,6 +31,7 @@ float distanceToDo = 0;
 void setup()
 { 
   //Serial.begin(115200);
+  digitalWrite(coolerPin, HIGH);
   tactic = CLASSIC_TACTIC;// AGGRESSIVE_TACTIC   CLASSIC_TACTIC
   base.setTacticDelays(tactic);
   timeUpTimer = 0;
@@ -158,6 +159,7 @@ void loop()
       base.moveForward(25,mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
+      
     case 115:        //      throw the net over the mammoth
       delay(5000);
       devices.ThrowNet();
@@ -364,6 +366,7 @@ void testIfTimeUp()
 
 void timeIsUpStopEverything()
 {
+  digitalWrite(coolerPin, LOW);
   state = STATE_STOP;
   base.stopNow();
   devices.stopShooting();

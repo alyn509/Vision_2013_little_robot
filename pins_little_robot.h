@@ -14,6 +14,7 @@ const int frontRightSensorPin = 7;
 const int backSensorPin = 19;
 const int leftSensorPin = 20;
 const int rightSensorPin = 21;
+const int coolerPin = 15;
 
 const int leftMotorEnablePin = 8;
 const int leftMotorStepPin = 9;
