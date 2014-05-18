@@ -24,6 +24,7 @@
       void setDirectionBackward();
       void setTargetDelay(unsigned long targetDelay);
       boolean isOff();
+      boolean isPaused();
       boolean isAtTargetSpeed();
       void doSteps(unsigned long stepNumber);
       void doDistanceInCm(float distance);
@@ -34,6 +35,7 @@
       void unpause();
       void setSpecial();
       void resetSpecial();
+      float getDistanceMadeSoFar();
     private:
       void doSetup();
       float computeSpeed();
@@ -44,7 +46,7 @@
       VisionState motorState, enableState, speedState, stepState;
       long stepsMadeSoFar, stepsRemaining;
       float stepSpeedCounter, stepSpeedCounterAcceleration, stepSpeedCounterSlowing;
-      float startSpeedDelay, currentDelay, targetDelay, pauseSpeedDelay, delayBeforeTurnOff, highPhaseDelay, savedWhenPausingDelay;
+      float startSpeedDelay, currentDelay, targetDelay, pauseSpeedDelay, delayBeforeTurnOff, highPhaseDelay, savedWhenPausingDelay, savedDeacceleration;
       int old_state;
       elapsedMicros stepTimer;
       elapsedMillis stopTimer, pauseTurnOff;

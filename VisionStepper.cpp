@@ -83,12 +83,12 @@ void VisionStepper::setTacticDelays(int tactic)
   switch(tactic)
   {
     case CLASSIC_TACTIC:  
-      stepSpeedCounterAcceleration = 6;
-      stepSpeedCounterSlowing = 5;
+      stepSpeedCounterAcceleration = 8;
+      stepSpeedCounterSlowing = 6;
       break;
     case AGGRESSIVE_TACTIC:  
-      stepSpeedCounterAcceleration = 60; // 80
-      stepSpeedCounterSlowing = 30;  // 40
+      stepSpeedCounterAcceleration = 40; // 80
+      stepSpeedCounterSlowing = 20;  // 40
       break;
   }
 }
@@ -121,12 +121,15 @@ void VisionStepper::doLoop()
       break;
     case PAUSING_SLOWING:
       savedWhenPausingDelay = targetDelay;
+      savedDeacceleration = stepSpeedCounterSlowing;
+      stepSpeedCounterSlowing = 50;
       setTargetDelay(pauseSpeedDelay);
       motorState = PAUSING;
       break;
     case PAUSING:
       if (speedState == CONSTANT)
       {
+        stepSpeedCounterSlowing = savedDeacceleration;
         enableState = DELAYED_TURN_OFF;
         motorState = PAUSED;
       }
@@ -220,7 +223,7 @@ void VisionStepper::doLoop()
       {
         stepSpeedCounter -= stepSpeedCounterSlowing;
         if (stepSpeedCounter < 0)
-            stepSpeedCounter = 0;|
+            stepSpeedCounter = 0;
       }
       currentDelay = startSpeedDelay / sqrt(stepSpeedCounter + 1);
       stepPinState = LOW;
@@ -236,7 +239,10 @@ void VisionStepper::doLoop()
       stepState.doLoop();
   }
 }
-
+float VisionStepper::getDistanceMadeSoFar()
+{
+  return stepsMadeSoFar / stepCmRatio;
+}
 float VisionStepper::computeSpeed()
 {
   return startSpeedDelay * 10 / sqrt(1 * stepSpeedCounter + 100);
@@ -270,6 +276,11 @@ void VisionStepper::setTargetDelay(unsigned long targetDelay)
 boolean VisionStepper::isOff()
 {
   return motorState == STOPPED;
+}
+
+boolean VisionStepper::isPaused()
+{
+  return ((motorState == PAUSING_SLOWING) || (motorState == PAUSING) || (motorState == PAUSED));
 }
 
 void VisionStepper::setDirectionForward()

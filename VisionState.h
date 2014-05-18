@@ -24,7 +24,7 @@ class VisionState {
     VisionState& operator++();
     VisionState operator++(int);
   public:
-    int state, stateToSetAfterWait;
+    int state, stateToSetAfterWait, originalState;
     unsigned long timeToWait, timeToWaitInMicros;
     elapsedMillis time;
     elapsedMicros timeMicros;

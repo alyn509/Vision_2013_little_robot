@@ -2,6 +2,7 @@
 
 void VisionState::wait(unsigned long timeInMs, int nextState)
 {
+  originalState = *this;
   if (nextState == STATE_NEXT)
     stateToSetAfterWait = *this + 1;
   else
@@ -13,6 +14,7 @@ void VisionState::wait(unsigned long timeInMs, int nextState)
 
 void VisionState::waitMicros(unsigned long timeInMicros, int nextState)
 {
+  originalState = *this;
   if (nextState == STATE_NEXT)
     stateToSetAfterWait = *this + 1;
   else
@@ -24,6 +26,7 @@ void VisionState::waitMicros(unsigned long timeInMicros, int nextState)
 
 void VisionState::waitFor(boolean (*functionToTestFor)(), int nextState)
 {
+  originalState = *this;
   if (nextState == STATE_NEXT)
     stateToSetAfterWait = *this + 1;
   else if (nextState == STATE_LAST)
@@ -34,7 +37,7 @@ void VisionState::waitFor(boolean (*functionToTestFor)(), int nextState)
 }
 
 void VisionState::doLoop()
-{
+{ 
   switch (state)
   {
     case STATE_STOP:
@@ -77,6 +80,6 @@ VisionState& VisionState::operator++() {
 
 VisionState VisionState::operator++(int) {
   VisionState tmp(*this); // copy
-  operator++(); // pre-increment
+  operator++(); // pre-incrementoriginalState = *this;
   return tmp;   // return old value
 }

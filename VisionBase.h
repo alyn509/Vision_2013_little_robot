@@ -35,6 +35,8 @@ class VisionBase {
     void setSpecial();
     void resetSpecial();
     boolean isStopped();
+    boolean isPaused();
+    float getDistanceMadeSoFar();
   public:
     VisionStepper leftMotor, rightMotor;
     VisionSensor back, left, right, frontLeft, frontFront, frontRight;

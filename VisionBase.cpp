@@ -129,8 +129,9 @@ void VisionBase::unpause()
 
 boolean VisionBase::frontDetected()
 {
-  return frontLeft.detect() && frontRight.detect();
+  return frontLeft.detect() || frontRight.detect();
 }
+
 /*
 boolean VisionBase::leftDetected()
 {
@@ -150,6 +151,11 @@ boolean VisionBase::backDetected()
 boolean VisionBase::isStopped()
 {
   return leftMotor.isOff() && rightMotor.isOff();
+}
+
+boolean VisionBase::isPaused()
+{
+  return leftMotor.isPaused() && rightMotor.isPaused();
 }
 
 void VisionBase::checkObstructions()
@@ -175,4 +181,9 @@ void VisionBase::stopNow()
 {    
   leftMotor.stopNow();
   rightMotor.stopNow();
+}
+
+float VisionBase::getDistanceMadeSoFar()
+{    
+  return (leftMotor.getDistanceMadeSoFar() + rightMotor.getDistanceMadeSoFar()) / 2;
 }
