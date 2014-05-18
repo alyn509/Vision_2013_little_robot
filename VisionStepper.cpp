@@ -87,9 +87,14 @@ void VisionStepper::setTacticDelays(int tactic)
       stepSpeedCounterSlowing = 6;
       break;
     case AGGRESSIVE_TACTIC:  
-      stepSpeedCounterAcceleration = 40; // 80
-      stepSpeedCounterSlowing = 20;  // 40
+      stepSpeedCounterAcceleration = 80; // 80
+      stepSpeedCounterSlowing = 40;  // 40
       break;
+    case FAST_START:
+      stepSpeedCounterAcceleration = 40;
+      stepSpeedCounterSlowing = 20;
+      break;
+      
   }
 }
 

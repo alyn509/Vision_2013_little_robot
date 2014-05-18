@@ -25,14 +25,14 @@ float distanceToDo = 0;
 
 void setup()
 { 
-  Serial.begin(115200);
-  tactic = CLASSIC_TACTIC;// AGGRESSIVE_TACTIC   CLASSIC_TACTIC
+  //Serial.begin(115200);
+  tactic = AGGRESSIVE_TACTIC;// AGGRESSIVE_TACTIC   CLASSIC_TACTIC
   base.setTacticDelays(tactic);
   timeUpTimer = 0;
   base.init();
   devices.init();
   ignoreSensors = true;
-  state.wait(4000, tactic);
+  state.wait(1000, tactic);
 }
 
 void loop()
@@ -42,8 +42,8 @@ void loop()
     
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC:     //      go to the mammoth
-      base.setTacticDelays(AGGRESSIVE_TACTIC);
-      classicStart(73,500);
+      base.setTacticDelays(FAST_START);
+      classicStart(77,500);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 1:                    //      shoot all balls 
@@ -92,7 +92,7 @@ void loop()
       break;
       //************ avoid enemy *********case 2*************
     case 110:       //     
-      Serial.println("BAAAAAAAAAAAA");
+      //Serial.println("BAAAAAAAAAAAA");
       base.moveBackward(base.getDistanceMadeSoFar(),mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
@@ -160,7 +160,8 @@ void loop()
     
       
       //******************************************AGGRESSIVE TACTIC**************************************************/
-    case AGGRESSIVE_TACTIC:        //      go at fast speed at the enemy's mammoth 
+    case AGGRESSIVE_TACTIC:        //      go at fast speed at the enemy's mammoth     
+      base.setTacticDelays(AGGRESSIVE_TACTIC);
       classicStart(223,highPhaseDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
@@ -187,7 +188,7 @@ void loop()
       state.waitFor(baseStop, STATE_NEXT);
     break;
     case 25:        //      hit the wall
-      strictForward(5,ultraSlowSpeedDelay);
+      strictForward(10,ultraSlowSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
     break;
     case 26:        //      go back to the edge of the black line
@@ -218,7 +219,7 @@ void loop()
       case 31:        //     throw the net
       devices.ThrowNet();
       state = STATE_STOP;
-      break;      
+      break;     
     case STATE_NET:
       devices.ThrowNet();
       state = STATE_STOP;
@@ -250,24 +251,24 @@ void checkForObstacle()
 {
   if(base.obstructionDetected == true && ignoreSensors == false && !base.isPaused())   
   {
-    Serial.println("A");
+    //Serial.println("A");
       enemyTimer = 0;
       base.pause();
   }
   else if(base.obstructionDetected == false && ignoreSensors == false && base.isPaused())
-  { Serial.println("B");
+  { //Serial.println("B");
     base.unpause();
   }
   else if(enemyTimer >= 5000L && base.isPaused())
   {
-    Serial.println("C");
+    //Serial.println("C");
     switch(state.originalState)
     {
       case 2: state = 110; 
               base.stopNow();
-              Serial.println("D");
+              //Serial.println("D");
               break;
-      default:              Serial.print(state.originalState);Serial.print(" ");Serial.println(state.state);break;
+      //default:              //Serial.print(state.originalState);//Serial.print(" ");//Serial.println(state.state);break;
     }
   }
 }

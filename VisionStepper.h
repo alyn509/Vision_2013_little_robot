@@ -7,7 +7,8 @@
   
   #define CLASSIC_TACTIC 0
   #define AGGRESSIVE_TACTIC 20
-  #define FRIENDLY_TACTIC 40
+  #define FAST_START 40
+  #define FRIENDLY_TACTIC 60
   
   class VisionStepper {
     public:
