@@ -46,16 +46,8 @@ void VisionBase::moveForward(float distance, unsigned long step_delay)
   directionMovement = FRONT;
   leftMotor.setTargetDelay(step_delay);         
   rightMotor.setTargetDelay(step_delay);
-  if(!oppositeSide)
-  {
-    leftMotor.setDirectionForward();
-    rightMotor.setDirectionForward();
-  }
-  else
-  {
-    leftMotor.setDirectionBackward();
-    rightMotor.setDirectionBackward();
-  }
+  leftMotor.setDirectionForward();
+  rightMotor.setDirectionForward();
   leftMotor.doDistanceInCm(distance);
   rightMotor.doDistanceInCm(distance);
 }
@@ -67,16 +59,8 @@ void VisionBase::moveBackward(float distance, unsigned long step_delay)
   rightMotor.setTargetDelay(step_delay);
   leftMotor.setDirectionBackward();
   rightMotor.setDirectionBackward();  
-  if(!oppositeSide)
-  {
-    leftMotor.setDirectionBackward();
-    rightMotor.setDirectionBackward();
-  }
-  else
-  {    
-    leftMotor.setDirectionForward();
-    rightMotor.setDirectionForward();
-  }
+  leftMotor.setDirectionBackward();
+  rightMotor.setDirectionBackward();
   leftMotor.doDistanceInCm(distance);
   rightMotor.doDistanceInCm(distance);
 }
@@ -86,8 +70,8 @@ void VisionBase::turnLeft(int angle)
   directionMovement = LEFT;
   leftMotor.setTargetDelay(5000);         
   rightMotor.setTargetDelay(5000);
-    leftMotor.setDirectionBackward();
-    rightMotor.setDirectionForward();
+  leftMotor.setDirectionBackward();
+  rightMotor.setDirectionForward();
   leftMotor.doRotationInAngle(angle);
   rightMotor.doRotationInAngle(angle); 
 }
@@ -97,8 +81,8 @@ void VisionBase::turnRight(int angle)
   directionMovement = RIGHT;
   leftMotor.setTargetDelay(5000);         
   rightMotor.setTargetDelay(5000);
-    leftMotor.setDirectionForward();
-    rightMotor.setDirectionBackward();
+  leftMotor.setDirectionForward();
+  rightMotor.setDirectionBackward();
   leftMotor.doRotationInAngle(angle);
   rightMotor.doRotationInAngle(angle);
 }
@@ -161,13 +145,13 @@ boolean VisionBase::isPaused()
 void VisionBase::checkObstructions()
 {
   obstructionDetected = false;
-  if ((frontDetected() && directionMovement == FRONT && !oppositeSide) || (frontDetected() && directionMovement == BACK && oppositeSide))
+  if (frontDetected() && directionMovement == FRONT)
     obstructionDetected = true;
   /*if (leftDetected() && (directionMovement == LEFT || directionMovement == RIGHT))
     obstructionDetected = true;
   if (rightDetected() && (directionMovement == LEFT || directionMovement == RIGHT))
     obstructionDetected = true;*/
-  if ((backDetected() && directionMovement == BACK && !oppositeSide) || (backDetected() && directionMovement == FRONT && oppositeSide))
+  if (backDetected() && directionMovement == BACK)
     obstructionDetected = true;
 }
 

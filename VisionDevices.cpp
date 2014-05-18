@@ -22,8 +22,8 @@ void VisionDevices::init()
   pinMode(ShootBallPin, OUTPUT);
   digitalWrite(ShootBallPin, LOW);
   
-  pinMode(ThrowNetPin, OUTPUT);
-  digitalWrite(ThrowNetPin, LOW);
+  net.attach(ThrowNetPin);
+  initNet();
 }
 
 void VisionDevices::shootBall()
@@ -64,7 +64,10 @@ void VisionDevices::stopSpinningBallTray()
 
 void VisionDevices::ThrowNet()
 {
-  digitalWrite(ThrowNetPin, HIGH);
-  delay(delayActions);
-  //digitalWrite(ThrowNetPin, LOW);
+  net.write(130);
+}
+
+void VisionDevices::initNet()
+{
+  net.write(20);
 }

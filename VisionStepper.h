@@ -6,9 +6,9 @@
   #include "VisionState.h"
   
   #define CLASSIC_TACTIC 0
-  #define AGGRESSIVE_TACTIC 20
-  #define FAST_START 40
-  #define FRIENDLY_TACTIC 60
+  #define AGGRESSIVE_TACTIC 40
+  #define FAST_START 150
+  #define FRIENDLY_TACTIC 80
   
   class VisionStepper {
     public:
