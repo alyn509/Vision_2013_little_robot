@@ -6,7 +6,7 @@ const int ColourSensorPin2 = 1199;	// analog
 const int ColourSensorPin3 = 1200;	// analog
 
 const int ThrowNetPin = 49;
-const int ShootBallPin = 16;
+const int ShootBallPin = 15;
 const int PrepareBallPin = 17;
 
 const int frontLeftSensorPin = 18;
@@ -14,7 +14,6 @@ const int frontRightSensorPin = 7;
 const int backSensorPin = 19;
 const int leftSensorPin = 20;
 const int rightSensorPin = 21;
-const int coolerPin = 15;
 
 const int leftMotorEnablePin = 8;
 const int leftMotorStepPin = 9;

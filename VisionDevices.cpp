@@ -64,10 +64,10 @@ void VisionDevices::stopSpinningBallTray()
 
 void VisionDevices::ThrowNet()
 {
-  net.write(130);
+  net.write(90);
 }
 
 void VisionDevices::initNet()
 {
-  net.write(20);
+  net.write(180);
 }
