@@ -3,9 +3,9 @@
 void VisionBase::init()
 {
   
-  //frontLeft.initPin(frontLeftSensorPin);
+  frontLeft.initPin(frontLeftSensorPin);
   //frontFront.initPin(frontFrontSensorPin);
-  //frontRight.initPin(frontRightSensorPin);
+  frontRight.initPin(frontRightSensorPin);
   
   //left.initPin(leftSensorPin);
   //right.initPin(rightSensorPin);  
@@ -144,7 +144,9 @@ void VisionBase::checkObstructions()
 {
   obstructionDetected = false;
   if (frontDetected() && directionMovement == FRONT)
+  {
     obstructionDetected = true;
+  }
   /*if (leftDetected() && (directionMovement == LEFT || directionMovement == RIGHT))
     obstructionDetected = true;
   if (rightDetected() && (directionMovement == LEFT || directionMovement == RIGHT))

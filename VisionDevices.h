@@ -16,8 +16,11 @@ class VisionDevices {
     void startSpinningBallTray();
     void stopSpinningBallTray();
     void stopShooting();
+    void pauseSpinningBallTray();
+    void resumeSpinningBallTray();
   public:
     Servo net;
+    boolean shooting;
 };
 
 #endif

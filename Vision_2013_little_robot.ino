@@ -11,10 +11,13 @@
 #include "pins_little_robot.h"
 #include "little_robot_constants.h"
 
-#define NINETYSECONDS 88000L
+#define NINETYSECONDS 89000L
 
 #define CLASSIC_TACTIC_RED 0
 #define CLASSIC_TACTIC_YELLOW 20
+
+#define SAFE_TACTIC_RED 200
+#define SAFE_TACTIC_YELLOW 220
 
 #define AGGRESSIVE_TACTIC_RED 40
 #define AGGRESSIVE_TACTIC_YELLOW 60
@@ -23,7 +26,8 @@ VisionBase base;
 VisionDevices devices;
 boolean ignoreSensors = false;
 elapsedMillis timeUpTimer;
-elapsedMillis enemyTimer;
+elapsedMillis extra;
+elapsedMillis enemyTimer, enemyThere;
 boolean stoppedEverything = false;
 
 VisionState state;
@@ -34,26 +38,38 @@ float distanceToDo = 0;
 
 void setup()
 { 
-  //Serial.begin(115200
-  tactic = CLASSIC_TACTIC;    //    AGGRESSIVE_TACTIC     CLASSIC_TACTIC
-  base.setTacticDelays(tactic);
+  //Serial.begin(115200);
+  tactic = HOMOLOGATION;    //    AGGRESSIVE_TACTIC     CLASSIC_TACTIC     SAFE_TACTIC     HOMOLOGATION
+  //base.setTacticDelays(tactic);
   timeUpTimer = 0;
   base.init();
   devices.init();
   devices.startShooting();  
-  ignoreSensors = true;
+  ignoreSensors = true; 
   team_color = base.oppositeSide ? 20 : 0;
+  team_color = (team_color == HOMOLOGATION) ? 0 : team_color;
   state.wait(100, tactic + team_color);
 }
 
 void loop()
 { 
   switch (state)
-  {    
+  {  
+    case HOMOLOGATION:  
+      ignoreSensors = false;
+      base.setTacticDelays(CLASSIC_TACTIC);
+      base.moveForward(80,ultraSlowSpeedDelay/20);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case -199:                    //      shoot all balls 
+      devices.startSpinningBallTray();
+      base.moveBackward(35,ultraSlowSpeedDelay * 125);
+      state.waitFor(baseStop, STATE_STOP);
+      break;
       //******************************************CLASSIC TACTIC**************************************************//
     case CLASSIC_TACTIC_RED:     //      go to the mammoth
       base.setTacticDelays(FAST_START);
-      base.moveForward(85,500);
+      base.moveForward(87,fastSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 1:                    //      shoot all balls 
@@ -65,7 +81,7 @@ void loop()
       break;
     case 2:        //      stop shooting and to the edge of the black line
       devices.stopSpinningBallTray();
-      base.moveForward(80, mediumSpeedDelay);
+      base.moveForward(70, mediumSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 3:             //      turn left
@@ -160,7 +176,7 @@ void loop()
     
     case CLASSIC_TACTIC_YELLOW:     //      go to the mammoth
       base.setTacticDelays(FAST_START);
-      base.moveForward(75,500);
+      base.moveForward(75,fastSpeedDelay);
       state.waitFor(baseStop, STATE_NEXT);
       break;
     case 21:             //      turn left
@@ -270,6 +286,95 @@ void loop()
       base.moveForward(25,mediumSpeedDelay);
       state.waitFor(baseStop, STATE_STOP);
       break;
+     
+       //******************************************SAFE TACTIC**************************************************//
+    case SAFE_TACTIC_RED:     //      go to the mammoth
+      base.setTacticDelays(FAST_START);
+      base.moveForward(122,fastSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 201:             //      turn left
+      base.setTacticDelays(CLASSIC_TACTIC);
+      base.turnLeft(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 202:             //      move to the wall
+      base.moveForward(50,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+    break;
+    case 203:             //      hit the wall
+      base.moveForward(20,ultraSlowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+    break;
+    case 204:        //       get back from the wall
+      ignoreSensors = false;
+      base.moveBackward(55,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 205:        //      turn right
+      base.turnRight(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;;
+    case 206:        //      return to the mammoth
+      base.moveBackward(40,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 207:                    //      shoot all balls 
+      devices.startSpinningBallTray();
+      base.moveBackward(35,ultraSlowSpeedDelay * 125);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 208:        //      stop shooting and to the edge of the black line
+      devices.stopSpinningBallTray();
+      base.moveForward(35, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_STOP);
+      break;
+      
+    //******+++++****** SAME TACTIC -> OTHER SIDE COLOR ******+++++****** //
+    
+    case SAFE_TACTIC_YELLOW:     //      go to the mammoth
+      base.setTacticDelays(FAST_START);
+      base.moveForward(122,fastSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;    
+    case 221:             //      turn left
+      base.turnRight(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 222:             //      move to the wall
+      base.moveForward(50,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+    break;
+    case 223:             //      hit the wall
+      base.moveForward(20,ultraSlowSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+    break;
+    case 224:        //       get back from the wall
+      ignoreSensors = false;
+      base.moveBackward(55,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 225:        //      turn right
+      base.turnRight(90);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;
+    case 226:        //      return to the mammoth
+      base.moveForward(40,mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_NEXT);
+      break;    
+    case 227:                    //      shoot all balls 
+      ignoreSensors = false;
+      base.setTacticDelays(CLASSIC_TACTIC);
+      devices.startSpinningBallTray();
+      base.moveForward(35,ultraSlowSpeedDelay * 125);
+      state.waitFor(baseStop, STATE_NEXT);
+      break; 
+    case 228:        //      stop shooting and to the edge of the black line
+      devices.stopSpinningBallTray();
+      base.moveBackward(35, mediumSpeedDelay);
+      state.waitFor(baseStop, STATE_STOP);
+      break;
+     
       //******************************************AGGRESSIVE TACTIC**************************************************/
     case AGGRESSIVE_TACTIC_RED:        //      go at fast speed at the enemy's mammoth     
       base.setTacticDelays(AGGRESSIVE_TACTIC);
@@ -394,15 +499,17 @@ void testIfTimeUp()
 {
   if(timeUpTimer == NINETYSECONDS)
     timeIsUpStopEverything();
+  if(timeUpTimer > NINETYSECONDS && extra == 3000)
+    devices.ThrowNet();
+  
 }
 
 void timeIsUpStopEverything()
 {
-  devices.ThrowNet();
+  extra = 0;
   devices.stopShooting();
   state = STATE_STOP;
   base.stopNow();
-  state = STATE_STOP;
 }
 
 void checkForObstacle()
@@ -411,10 +518,13 @@ void checkForObstacle()
   {
       enemyTimer = 0;
       base.pause();
+      devices.pauseSpinningBallTray();
+      enemyThere = 0;
   }
-  else if(base.obstructionDetected == false && ignoreSensors == false && base.isPaused())
+  else if(base.obstructionDetected == false && ignoreSensors == false && base.isPaused() && enemyThere > 500L)
   {
     base.unpause();
+    devices.resumeSpinningBallTray();
   }
   else if(enemyTimer >= 5000L && base.isPaused())
   {

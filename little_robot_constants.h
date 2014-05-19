@@ -7,7 +7,7 @@ const unsigned long highPhaseDelay = 50;
 const unsigned long delayBeforeTurnOff = 500;
 
 const unsigned long slowSpeedDelay = 7000;
-const unsigned long fastSpeedDelay = 800;
+const unsigned long fastSpeedDelay = 600;
 const unsigned long mediumSpeedDelay = 3000;
 const unsigned long ultraSlowSpeedDelay = 100000L;
 

@@ -24,6 +24,7 @@ void VisionDevices::init()
   
   net.attach(ThrowNetPin);
   initNet();
+  shooting = false;
 }
 
 void VisionDevices::shootBall()
@@ -44,11 +45,24 @@ void VisionDevices::shootBall()
 void VisionDevices::startShooting()
 {
   digitalWrite(ShootBallPin, HIGH);
+  shooting = true;
 }
 
 void VisionDevices::stopShooting()
 {
    digitalWrite(ShootBallPin, LOW);
+   shooting = false;
+}
+void VisionDevices::pauseSpinningBallTray()
+{
+  if(shooting)
+    digitalWrite(PrepareBallPin, LOW);
+}
+
+void VisionDevices::resumeSpinningBallTray()
+{
+  if(shooting)
+   digitalWrite(PrepareBallPin, HIGH);
 }
 
 void VisionDevices::startSpinningBallTray()

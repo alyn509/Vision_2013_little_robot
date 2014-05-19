@@ -86,12 +86,20 @@ void VisionStepper::setTacticDelays(int tactic)
       stepSpeedCounterAcceleration = 8;
       stepSpeedCounterSlowing = 6;
       break;
+    /*case SAFE_TACTIC:  
+      stepSpeedCounterAcceleration = 8;
+      stepSpeedCounterSlowing = 6;
+      break;
+    case HOMOLOGATION: 
+      stepSpeedCounterAcceleration = 8;
+      stepSpeedCounterSlowing = 6;
+      break;*/
     case AGGRESSIVE_TACTIC:  
       stepSpeedCounterAcceleration = 30; // 80
       stepSpeedCounterSlowing = 40;  // 40
       break;
     case FAST_START:
-      stepSpeedCounterAcceleration = 40;
+      stepSpeedCounterAcceleration = 25;
       stepSpeedCounterSlowing = 20;
       break;
       
@@ -255,7 +263,7 @@ float VisionStepper::computeSpeed()
 
 void VisionStepper::pause()
 {
-  if (motorState == RUNNING)
+  if (motorState == RUNNING || motorState == STOPPING)
     motorState = PAUSING_SLOWING;
 }
 
