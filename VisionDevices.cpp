@@ -45,43 +45,43 @@ void VisionDevices::shootBall()
 void VisionDevices::startShooting()
 {
   digitalWrite(ShootBallPin, HIGH);
-  shooting = true;
 }
 
 void VisionDevices::stopShooting()
 {
    digitalWrite(ShootBallPin, LOW);
-   shooting = false;
 }
 void VisionDevices::pauseSpinningBallTray()
 {
-  if(shooting)
+  if(shooting == true)
     digitalWrite(PrepareBallPin, LOW);
 }
 
 void VisionDevices::resumeSpinningBallTray()
 {
-  if(shooting)
+  if(shooting == true)
    digitalWrite(PrepareBallPin, HIGH);
 }
 
 void VisionDevices::startSpinningBallTray()
 {
   digitalWrite(PrepareBallPin, HIGH);
+  shooting = true;
   waitTime = 0;
 }
 
 void VisionDevices::stopSpinningBallTray()
 {
   digitalWrite(PrepareBallPin, LOW);
+  shooting = false;
 }
 
 void VisionDevices::ThrowNet()
 {
-  net.write(90);
+  net.write(0);
 }
 
 void VisionDevices::initNet()
 {
-  net.write(180);
+  net.write(55);
 }

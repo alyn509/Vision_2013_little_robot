@@ -17,4 +17,9 @@ const int wheelRevolutionSteps = 200;
 
 const float encoderRevolutionSteps = 24;
 
+const int sensorScannerLeft = 130;
+const int sensorScannerMiddle = 90;
+const int sensorScannerRight = 65;
+const unsigned long sensorScannerToggleInterval = 400;
+
 #endif

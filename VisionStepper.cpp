@@ -86,7 +86,7 @@ void VisionStepper::setTacticDelays(int tactic)
       stepSpeedCounterAcceleration = 8;
       stepSpeedCounterSlowing = 6;
       break;
-    /*case SAFE_TACTIC:  
+    /*case GREEDY_TACTIC:  
       stepSpeedCounterAcceleration = 8;
       stepSpeedCounterSlowing = 6;
       break;

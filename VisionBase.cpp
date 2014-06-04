@@ -2,129 +2,103 @@
 
 void VisionBase::init()
 {
+  //frontLeft.initPin(frontLeftSensorPin);
+  front.initPin(frontFrontSensorPin);
+  //frontRight.initPin(frontRightSensorPin);
   
-  frontLeft.initPin(frontLeftSensorPin);
-  //frontFront.initPin(frontFrontSensorPin);
-  frontRight.initPin(frontRightSensorPin);
-  
-  //left.initPin(leftSensorPin);
-  //right.initPin(rightSensorPin);  
   back.initPin(backSensorPin);
 
-  //leftMotor.init();
+  
   leftMotor.initDirectionForward(HIGH);
   leftMotor.initPins(rightMotorEnablePin, leftMotorDirectionPin, rightMotorStepPin);
-  //leftMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, pauseSpeedDelay, delayBeforeTurnOff);
-  //leftMotor.initSizes(wheelDiameter, wheelRevolutionSteps,distanceBetweenWheels);
   
   rightMotor.init();
   rightMotor.initDirectionForward(LOW);
   rightMotor.initPins(rightMotorEnablePin, rightMotorDirectionPin, rightMotorStepPin);
   rightMotor.initDelays(defaultStartSpeedDelay, highPhaseDelay, pauseSpeedDelay, delayBeforeTurnOff);
-  rightMotor.initSizes(wheelDiameter, wheelRevolutionSteps,distanceBetweenWheels);
+  rightMotor.initSizes(wheelDiameter, wheelRevolutionSteps,distanceBetweenWheels);  
+  
+  sensorScanner.attach(sensorScannerPin);
+  sensorScanner.write(sensorScannerMiddle);
   
   directionMovement = NONE;
   obstructionDetected = false;
+  ignoredSensors = false;
   pinMode(colorRedPin, INPUT);
   oppositeSide = (digitalRead(colorRedPin) == HIGH);// = false;
 }
 
 void VisionBase::setTacticDelays(int tactic)
 {
-  //leftMotor.setTacticDelays(tactic);
   rightMotor.setTacticDelays(tactic);
 }
 
 void VisionBase::setStartDelays(unsigned long startDelay)
 {
-  //leftMotor.initDelays(startDelay, highPhaseDelay, pauseSpeedDelay, delayBeforeTurnOff);
   rightMotor.initDelays(startDelay, highPhaseDelay, pauseSpeedDelay, delayBeforeTurnOff);
 }
 
 void VisionBase::moveForward(float distance, unsigned long step_delay)
 {       
-  directionMovement = FRONT;
-  //leftMotor.setTargetDelay(step_delay);         
+  directionMovement = FRONT;       
   rightMotor.setTargetDelay(step_delay);
   leftMotor.setDirectionForward();
   rightMotor.setDirectionForward();
-  //leftMotor.doDistanceInCm(distance);
   rightMotor.doDistanceInCm(distance);
 }
 
 void VisionBase::moveBackward(float distance, unsigned long step_delay)
 {    
-  directionMovement = BACK;
-  //leftMotor.setTargetDelay(step_delay);         
+  directionMovement = BACK;   
   rightMotor.setTargetDelay(step_delay);
   leftMotor.setDirectionBackward();
   rightMotor.setDirectionBackward();  
-  //leftMotor.doDistanceInCm(distance);
   rightMotor.doDistanceInCm(distance);
 }
 
 void VisionBase::turnLeft(int angle)
 {
-  directionMovement = LEFT;
-  //leftMotor.setTargetDelay(5000);         
+  directionMovement = LEFT; 
   rightMotor.setTargetDelay(5000);
   leftMotor.setDirectionBackward();
   rightMotor.setDirectionForward();
-  //leftMotor.doRotationInAngle(angle);
   rightMotor.doRotationInAngle(angle); 
 }
 
 void VisionBase::turnRight(int angle)
 {  
-  directionMovement = RIGHT;
-  //leftMotor.setTargetDelay(5000);         
+  directionMovement = RIGHT;    
   rightMotor.setTargetDelay(5000);
   leftMotor.setDirectionForward();
   rightMotor.setDirectionBackward();
-  //leftMotor.doRotationInAngle(angle);
   rightMotor.doRotationInAngle(angle);
 }
 
 void VisionBase::setSpecial()
 {
-  //leftMotor.setSpecial();
   rightMotor.setSpecial();
 }
 
 void VisionBase::resetSpecial()
 {
-  //leftMotor.resetSpecial();
   rightMotor.resetSpecial();
 }
 
 void VisionBase::pause()
 {
-  //leftMotor.pause();
   rightMotor.pause();
 }
 
 void VisionBase::unpause()
 {
-  //leftMotor.unpause();
   rightMotor.unpause();
 }
 
 boolean VisionBase::frontDetected()
 {
-  return frontLeft.detect() || frontRight.detect();
+  return front.detect();
 }
 
-/*
-boolean VisionBase::leftDetected()
-{
-  return left.detect();
-}
-
-boolean VisionBase::rightDetected()
-{
-  return right.detect();
-}
-*/
 boolean VisionBase::backDetected()
 {
   return back.detect();
@@ -132,38 +106,40 @@ boolean VisionBase::backDetected()
 
 boolean VisionBase::isStopped()
 {
-  return /*leftMotor.isOff() &&*/ rightMotor.isOff();
+  return rightMotor.isOff();
 }
 
 boolean VisionBase::isPaused()
 {
-  return /*leftMotor.isPaused() &&*/ rightMotor.isPaused();
+  return rightMotor.isPaused();
 }
 
 void VisionBase::checkObstructions()
 {
   obstructionDetected = false;
-  if (frontDetected() && directionMovement == FRONT)
+  if (frontDetected() && !ignoredSensors && directionMovement == FRONT)
   {
     obstructionDetected = true;
   }
-  /*if (leftDetected() && (directionMovement == LEFT || directionMovement == RIGHT))
-    obstructionDetected = true;
-  if (rightDetected() && (directionMovement == LEFT || directionMovement == RIGHT))
-    obstructionDetected = true;*/
-  if (backDetected() && directionMovement == BACK)
+  if (backDetected() && !ignoredSensors && directionMovement == BACK)
     obstructionDetected = true;
 }
 
 void VisionBase::doLoop()
 {
-  //leftMotor.doLoop();
   rightMotor.doLoop();
+  if (sensorToggleTimer > sensorScannerToggleInterval)
+  {
+    if (sensorScanner.read() == sensorScannerLeft)
+      sensorScanner.write(sensorScannerRight);
+    else
+      sensorScanner.write(sensorScannerLeft);
+    sensorToggleTimer = 0;
+  }
 }
 
 void VisionBase::stopNow()
 {    
-  //leftMotor.stopNow();
   rightMotor.stopNow();
 }
 

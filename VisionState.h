@@ -11,6 +11,7 @@
 #define STATE_NEXT -5
 #define STATE_LAST -6
 #define STATE_NET -7
+#define STATE_PATROL 500
 
 class VisionState {
   public:

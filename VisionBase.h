@@ -7,6 +7,7 @@
 #include "pins_little_robot.h"
 #include "little_robot_constants.h"
 #include <elapsedMillis.h>
+#include <Servo.h>
 
 #define NONE 0
 #define FRONT 1
@@ -17,6 +18,8 @@
 class VisionBase {
   public:
     void init();
+    Servo sensorScanner;
+    elapsedMillis sensorToggleTimer;
     void setStartDelays(unsigned long startDelay);
     void setTacticDelays(int tactic);
     void moveForward(float distance, unsigned long step_delay);
@@ -39,9 +42,10 @@ class VisionBase {
     float getDistanceMadeSoFar();
   public:
     VisionStepper leftMotor, rightMotor;
-    VisionSensor back, left, right, frontLeft, frontFront, frontRight;
+    VisionSensor back, left, right, frontLeft, front, frontRight;
     int directionMovement;
     boolean oppositeSide;
+    boolean ignoredSensors;
     boolean obstructionDetected;
 };
 

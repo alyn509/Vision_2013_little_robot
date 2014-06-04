@@ -5,6 +5,8 @@ void VisionState::wait(unsigned long timeInMs, int nextState)
   originalState = *this;
   if (nextState == STATE_NEXT)
     stateToSetAfterWait = *this + 1;
+  else if (nextState == STATE_LAST)
+    stateToSetAfterWait = *this - 1;
   else
     stateToSetAfterWait = nextState;
   *this = STATE_WAIT;
@@ -17,6 +19,8 @@ void VisionState::waitMicros(unsigned long timeInMicros, int nextState)
   originalState = *this;
   if (nextState == STATE_NEXT)
     stateToSetAfterWait = *this + 1;
+  else if (nextState == STATE_LAST)
+    stateToSetAfterWait = *this - 1;
   else
     stateToSetAfterWait = nextState;
   *this = STATE_WAIT_MICROS;
