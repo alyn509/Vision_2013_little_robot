@@ -9,12 +9,12 @@ const int ThrowNetPin = 49;
 const int ShootBallPin = 15;
 const int PrepareBallPin = 17;
 
-const int frontLeftSensorPin = 8;
-const int frontRightSensorPin = 18;
-const int frontFrontSensorPin = A14; //7
-const int backSensorPin = A15; //19
-const int leftSensorPin = 20;
-const int rightSensorPin = 21;
+const int frontLeftSensorPin = 28;
+const int frontRightSensorPin = A14;
+//const int frontFrontSensorPin = A14; //7
+const int backLeftSensorPin = 22; //19
+const int backRightSensorPin = 24; //19
+const int backLowSensorPin = A15; //19
 
 //const int leftMotorEnablePin = 8;
 //const int leftMotorStepPin = 9;

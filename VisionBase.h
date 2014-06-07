@@ -42,7 +42,7 @@ class VisionBase {
     float getDistanceMadeSoFar();
   public:
     VisionStepper leftMotor, rightMotor;
-    VisionSensor back, left, right, frontLeft, front, frontRight;
+    VisionSensor backLeft, backRight, backLow, frontLeft, frontFront, frontRight;
     int directionMovement;
     boolean oppositeSide;
     boolean ignoredSensors;

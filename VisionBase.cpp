@@ -2,11 +2,13 @@
 
 void VisionBase::init()
 {
-  //frontLeft.initPin(frontLeftSensorPin);
-  front.initPin(frontFrontSensorPin);
-  //frontRight.initPin(frontRightSensorPin);
+  frontLeft.initPin(frontLeftSensorPin);
+  //frontFront.initPin(frontFrontSensorPin);
+  frontRight.initPin(frontRightSensorPin);
   
-  back.initPin(backSensorPin);
+  backLeft.initPin(backLeftSensorPin);
+  backRight.initPin(backRightSensorPin);
+  backLow.initPin(backLowSensorPin);
 
   
   leftMotor.initDirectionForward(HIGH);
@@ -96,12 +98,12 @@ void VisionBase::unpause()
 
 boolean VisionBase::frontDetected()
 {
-  return front.detect();
+  return frontLeft.detect() || frontRight.detect();
 }
 
 boolean VisionBase::backDetected()
 {
-  return back.detect();
+  return backLeft.detect() || backRight.detect() || backLow.detect();
 }
 
 boolean VisionBase::isStopped()
